@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from typing import List
-from .strategy import Trade
+from src.trade import Trade
 import os
 
 class StrategyVisualizer:
@@ -173,10 +173,4 @@ class StrategyVisualizer:
         fig, ax = plt.subplots(figsize=(15, 8))
         self.plot_volatility_regimes(ax)
         plt.savefig('plots/volatility_regimes.png')
-        plt.close()
-        
-        print("\nPlots have been saved to the 'plots' directory:")
-        print("1. plots/equity_curve.png")
-        print("2. plots/drawdown.png")
-        print("3. plots/trades.png")
-        print("4. plots/volatility_regimes.png") 
+        plt.close() 

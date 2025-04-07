@@ -32,7 +32,7 @@ quantvol-revert/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/quantvol-revert.git
+git clone https://github.com/diaabraham/algorithmic-trading-strategy.git
 cd quantvol-revert
 ```
 
