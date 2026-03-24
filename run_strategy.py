@@ -1,8 +1,10 @@
 from src.data_loader import DataLoader
 from src.strategy import VolatilityRegimeStrategy
 from src.visualization import StrategyVisualizer
+from src.config import get_settings
 
 # Load and preprocess data
+get_settings()
 data_loader = DataLoader('SPY', '2020-01-01', '2023-12-31')
 data = data_loader.get_data()
 
