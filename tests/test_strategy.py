@@ -30,8 +30,9 @@ class _ForcedEntry(VolatilityRegimeStrategy):
 
     def generate_signals(self):
         signals = super().generate_signals()
-        for col in ("long_entry", "short_entry", "long_momentum", "short_momentum"):
-            signals[col] = False
+        for col in ("long_entry", "short_entry", "long_momentum", "short_momentum", "long_trend"):
+            if col in signals.columns:
+                signals[col] = False
         signals.loc[signals.index[self._entry_i], "long_entry"] = True
         if self._momentum:
             signals.loc[signals.index[self._entry_i], "long_momentum"] = True
@@ -115,6 +116,20 @@ def test_cagr_is_finite_when_the_sample_is_shorter_than_a_day():
     assert np.isfinite(metrics["cagr"])
     assert np.isfinite(metrics["sharpe_ratio"])
     assert np.isfinite(metrics["max_drawdown"])
+
+
+def test_uptrend_is_held_past_the_short_hold_limit():
+    idx = pd.date_range("2024-01-01", periods=160, freq="D", tz="UTC")
+    close = np.linspace(100, 180, len(idx))
+    frame = _price_frame(idx, close, close * 0.98)
+    strategy = VolatilityRegimeStrategy(
+        frame,
+        params=StrategyParams(max_hold_days=5, use_bs_gate=True),
+        eval_start_date="2024-04-01",
+    )
+    strategy.run_backtest()
+    trend_trades = [trade for trade in strategy.trades if trade.position == 1 and trade.holding_period > 5]
+    assert trend_trades, "expected a trend long to outlast the 5-bar fade hold"
 
 
 def test_optimize_for_period_scores_the_eval_window(monkeypatch):

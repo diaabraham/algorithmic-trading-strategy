@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from typing import Dict, List
 from dataclasses import dataclass
+from src.black_scholes import black_scholes_up_proba, expected_move
+from src.brinson import brinson_single_asset
 from src.trade import Trade
 
 @dataclass
@@ -24,6 +26,17 @@ class StrategyParams:
     # ML gate: requires column ML_Up_Proba (from src.ml_signal). Disabled when ml_up_min_long <= 0.
     ml_up_min_long: float = 0.0
     ml_up_max_short: float = 1.0
+    # Trend sleeve uses a softer probability floor so a rising market is held, not faded.
+    ml_trend_min: float = 0.50
+    # Exit a trend only after price is this far under the 50-day average. A tag of the average is a pause.
+    trend_exit_band: float = 0.03
+    vol_lookback: int = 252
+    # Black-Scholes cone: fade only dislocations outside the hold-horizon expected move,
+    # and only when risk-neutral P(finish beyond the 20-day EMA) still supports the trade.
+    use_bs_gate: bool = True
+    bs_move_mult: float = 0.75
+    bs_long_min: float = 0.45
+    bs_short_max: float = 0.55
 
 class VolatilityRegimeStrategy:
     def __init__(
@@ -79,9 +92,25 @@ class VolatilityRegimeStrategy:
         
         # Forward-fill only. Back-fill would copy later bars into earlier ones.
         self.data = self.data.ffill()
+
+        # Current-scenario vol: rank against the last year, not the whole history.
+        lookback = max(int(self.params.vol_lookback), 2)
+        current_vol_pct = self.data["Volatility"].rolling(lookback, min_periods=min(60, lookback)).rank(pct=True)
+        if "Vol_Percentile" in self.data.columns:
+            current_vol_pct = current_vol_pct.fillna(self.data["Vol_Percentile"])
+        self.data["Vol_Percentile_Current"] = current_vol_pct
+
+        sigma = self.data["Volatility"].replace(0, np.nan).fillna(0.2).clip(lower=1e-4)
+        self.data["BS_Expected_Move"] = expected_move(self.data["Close"], sigma, self.params.max_hold_days)
+        self.data["BS_Up_Proba"] = black_scholes_up_proba(
+            self.data["Close"],
+            self.data["EMA_20"].clip(lower=1e-8),
+            sigma,
+            self.params.max_hold_days,
+        )
         
         # Generate signals with stricter regime + trend context filters.
-        high_vol_regime = self.data['Vol_Percentile'] > self.params.vol_threshold
+        high_vol_regime = self.data["Vol_Percentile_Current"] > self.params.vol_threshold
         long_mean_reversion = self.data['Price_Deviation'] < -self.params.mr_z_threshold * self.data['Deviation_Std']
         short_mean_reversion = self.data['Price_Deviation'] > self.params.mr_z_threshold * self.data['Deviation_Std']
         uptrend = self.data['Close'] > self.data['EMA_50']
@@ -119,24 +148,49 @@ class VolatilityRegimeStrategy:
             (~strong_uptrend)
         )
 
-        signals['long_entry'] = mean_reversion_long | momentum_long
+        if self.params.use_bs_gate:
+            dislocated = (self.data["Close"] - self.data["EMA_20"]).abs() >= (
+                self.params.bs_move_mult * self.data["BS_Expected_Move"]
+            )
+            bs_up = self.data["BS_Up_Proba"]
+            mean_reversion_long = mean_reversion_long & dislocated & (bs_up >= self.params.bs_long_min)
+            mean_reversion_short = mean_reversion_short & dislocated & (bs_up <= self.params.bs_short_max)
+            momentum_long = momentum_long & (bs_up >= 0.5)
+            momentum_short = momentum_short & (bs_up <= 0.5)
+
+        # Rising market: stay long once price is above the 50-day average and the
+        # cone says a finish above the 20-day mean is the more likely outcome.
+        # Waiting for the 20-day average to cross buys the rally after it has run.
+        trend_long = uptrend & (self.data["BS_Up_Proba"] >= 0.5)
+        # Do not short a market that is still above the 50-day average.
+        mean_reversion_short = mean_reversion_short & ~uptrend
+        momentum_short = momentum_short & ~uptrend
+
+        if self.params.sentiment_threshold >= 0 and "News_Sentiment" in self.data.columns:
+            sentiment = self.data["News_Sentiment"].fillna(0)
+            mean_reversion_long = mean_reversion_long & (sentiment >= -self.params.sentiment_threshold)
+            momentum_long = momentum_long & (sentiment >= -self.params.sentiment_threshold)
+            trend_long = trend_long & (sentiment >= -self.params.sentiment_threshold)
+            mean_reversion_short = mean_reversion_short & (sentiment <= self.params.sentiment_threshold)
+            momentum_short = momentum_short & (sentiment <= self.params.sentiment_threshold)
+
+        signals['long_entry'] = mean_reversion_long | momentum_long | trend_long
         signals['short_entry'] = mean_reversion_short | momentum_short
         # Style flags stay independent of the entry filters below so an entry
         # that survives the filters still knows which exit rules apply.
         signals['long_momentum'] = momentum_long
         signals['short_momentum'] = momentum_short
-
-        if self.params.sentiment_threshold >= 0 and "News_Sentiment" in self.data.columns:
-            sentiment = self.data["News_Sentiment"].fillna(0)
-            signals['long_entry'] = signals['long_entry'] & (sentiment >= -self.params.sentiment_threshold)
-            signals['short_entry'] = signals['short_entry'] & (sentiment <= self.params.sentiment_threshold)
+        signals['long_trend'] = trend_long
 
         if self.params.ml_up_min_long > 0 and "ML_Up_Proba" in self.data.columns:
             m = self.data["ML_Up_Proba"].fillna(0.5).clip(0.0, 1.0)
-            signals["long_entry"] = signals["long_entry"] & (m >= self.params.ml_up_min_long)
+            fade_long = (mean_reversion_long | momentum_long) & (m >= self.params.ml_up_min_long)
+            trend_ok = trend_long & (m >= self.params.ml_trend_min)
+            signals["long_entry"] = fade_long | trend_ok
+            signals["long_trend"] = trend_ok
             signals["short_entry"] = signals["short_entry"] & (m <= self.params.ml_up_max_short)
 
-        for col in ("long_entry", "short_entry", "long_momentum", "short_momentum"):
+        for col in ("long_entry", "short_entry", "long_momentum", "short_momentum", "long_trend"):
             signals[col] = signals[col].fillna(False)
 
         return signals
@@ -177,35 +231,42 @@ class VolatilityRegimeStrategy:
                 exit_signal = False
                 held_bars = i - self.entry_index
                 self.current_trade.holding_period = held_bars
-                # Mean-reversion fades and RSI exits contradict momentum entries:
-                # a long breakout is, by definition, above the mean with RSI > 55.
-                mean_reversion_style = self.entry_style != "momentum"
+                # Mean-reversion fades and RSI exits contradict momentum and trend entries.
+                mean_reversion_style = self.entry_style == "mean_reversion"
 
-                if mean_reversion_style:
+                if self.entry_style == "trend" and self.position == 1:
+                    ema_50 = self.data["EMA_50"].iloc[i]
+                    broken = current_price < ema_50 * (1.0 - self.params.trend_exit_band)
+                    cone_failed = self.data["BS_Up_Proba"].iloc[i] < self.params.bs_long_min
+                    if broken and cone_failed:
+                        exit_signal = True
+                elif mean_reversion_style:
                     if (self.position == 1 and price_deviation > -self.params.mean_reversion_exit_z * deviation_std) or \
                        (self.position == -1 and price_deviation < self.params.mean_reversion_exit_z * deviation_std):
                         exit_signal = True
                     elif (self.position == 1 and rsi > 55) or (self.position == -1 and rsi < 45):
                         exit_signal = True
 
-                # ATR-based stop/target helps prevent large losers in extended volatility.
-                if not exit_signal and self.entry_atr is not None and self.entry_atr > 0:
+                # ATR stop for fades. A trend hold exits on the 50-day break, not a one-bar ATR dip.
+                if not exit_signal and self.entry_style != "trend" and self.entry_atr is not None and self.entry_atr > 0:
                     if self.position == 1:
                         stop_loss = current_price <= (self.current_trade.entry_price - self.params.atr_stop_mult * self.entry_atr)
-                        take_profit = current_price >= (self.current_trade.entry_price + self.params.atr_take_mult * self.entry_atr)
+                        take_profit = self.entry_style != "trend" and current_price >= (
+                            self.current_trade.entry_price + self.params.atr_take_mult * self.entry_atr
+                        )
                     else:
                         stop_loss = current_price >= (self.current_trade.entry_price + self.params.atr_stop_mult * self.entry_atr)
                         take_profit = current_price <= (self.current_trade.entry_price - self.params.atr_take_mult * self.entry_atr)
                     if stop_loss or take_profit:
                         exit_signal = True
 
-                if not exit_signal:
+                if not exit_signal and self.entry_style != "trend":
                     if (self.position == 1 and price_deviation < -self.params.stop_z_fallback * deviation_std) or \
                        (self.position == -1 and price_deviation > self.params.stop_z_fallback * deviation_std):
                         exit_signal = True
 
-                # max_hold_days counts trading bars, not calendar days.
-                if not exit_signal and held_bars >= self.params.max_hold_days:
+                # max_hold_days counts trading bars. Trend holds stay on until the trend breaks.
+                if not exit_signal and self.entry_style != "trend" and held_bars >= self.params.max_hold_days:
                     exit_signal = True
                 
                 if exit_signal:
@@ -229,7 +290,12 @@ class VolatilityRegimeStrategy:
             elif self.position == 0:
                 if signals['long_entry'].iloc[i]:
                     self.position = 1
-                    self.entry_style = "momentum" if bool(signals['long_momentum'].iloc[i]) else "mean_reversion"
+                    if "long_trend" in signals.columns and bool(signals["long_trend"].iloc[i]):
+                        self.entry_style = "trend"
+                    elif bool(signals["long_momentum"].iloc[i]):
+                        self.entry_style = "momentum"
+                    else:
+                        self.entry_style = "mean_reversion"
                     self.entry_index = i
                     self.current_trade = Trade(
                         entry_date=current_date,
@@ -276,8 +342,8 @@ class VolatilityRegimeStrategy:
         
         return self.calculate_metrics()
 
-    def _strategy_daily_returns(self) -> pd.Series:
-        """Close-to-close strategy returns, including flat days as zero."""
+    def _daily_exposure(self) -> tuple[pd.Series, pd.Series]:
+        """Position and close-to-close asset return over the evaluation window."""
         idx = self.data.index
         position = pd.Series(0.0, index=idx)
         for trade in self.trades:
@@ -286,10 +352,23 @@ class VolatilityRegimeStrategy:
             held = (idx > trade.entry_date) & (idx <= trade.exit_date)
             position.loc[held] = float(trade.position)
         asset = self.data["Close"].astype(float).pct_change().fillna(0.0)
-        strat = position * asset
         if self.eval_start_date is not None:
-            strat = strat.loc[idx >= self.eval_start_date]
-        return strat.replace([np.inf, -np.inf], 0.0).fillna(0.0)
+            mask = idx >= self.eval_start_date
+            position = position.loc[mask]
+            asset = asset.loc[mask]
+        position = position.replace([np.inf, -np.inf], 0.0).fillna(0.0)
+        asset = asset.replace([np.inf, -np.inf], 0.0).fillna(0.0)
+        return position, asset
+
+    def _strategy_daily_returns(self) -> pd.Series:
+        """Close-to-close strategy returns, including flat days as zero."""
+        position, asset = self._daily_exposure()
+        return position * asset
+
+    def _brinson_factors(self) -> Dict:
+        position, asset = self._daily_exposure()
+        factors = brinson_single_asset(position, asset)
+        return {f"brinson_{key}": value for key, value in factors.items()}
         
     def calculate_metrics(self) -> Dict:
         """
@@ -298,6 +377,7 @@ class VolatilityRegimeStrategy:
         Returns:
             Dict: Dictionary containing performance metrics
         """
+        brinson = self._brinson_factors()
         if not self.trades:
             return {
                 'total_trades': 0,
@@ -305,7 +385,8 @@ class VolatilityRegimeStrategy:
                 'avg_return': 0,
                 'sharpe_ratio': 0,
                 'max_drawdown': 0,
-                'cagr': 0
+                'cagr': 0,
+                **brinson,
             }
             
         # Calculate basic metrics
@@ -347,5 +428,6 @@ class VolatilityRegimeStrategy:
             'avg_return': avg_return,
             'sharpe_ratio': sharpe_ratio,
             'max_drawdown': max_drawdown,
-            'cagr': cagr
+            'cagr': cagr,
+            **brinson,
         }

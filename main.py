@@ -101,14 +101,11 @@ def main():
         print(f"Overall weighted avg return: {weighted_avg:.2%}")
         return
 
-    load_start = args.start_date
-    eval_start = None
-    if args.train_ml:
-        from src.ml_signal import training_history_start
+    from src.ml_signal import attach_recursive_ml_up_proba, training_history_start
 
-        # The model can only train on bars strictly before the backtest window.
-        load_start = training_history_start(args.start_date)
-        eval_start = args.start_date
+    # Warmup bars train the walk-forward model. Trades are scored from the requested start.
+    load_start = training_history_start(args.start_date)
+    eval_start = args.start_date
 
     print(f"Running backtest for {args.symbol} from {args.start_date} to {args.end_date}")
     print(f"Initial capital: ${args.initial_capital:,.2f}")
@@ -116,8 +113,6 @@ def main():
     data_loader = DataLoader(args.symbol, load_start, args.end_date)
     data = data_loader.get_data()
     print(f"Data source: {data_loader.data_source} ({data_loader.symbol}, {len(data)} rows)")
-    source = getattr(data_loader, "data_source", "") or "unknown"
-    print(f"Data source: {source} ({data_loader.symbol})")
     if args.sentiment:
         from src.sentiment import combined_sentiment
         sentiment_score = combined_sentiment(
@@ -129,11 +124,8 @@ def main():
         )
         data["News_Sentiment"] = sentiment_score
 
-    if args.train_ml:
-        from src.ml_signal import attach_ml_up_proba
+    data = attach_recursive_ml_up_proba(data, eval_start=args.start_date)
 
-        data = attach_ml_up_proba(data, eval_start=args.start_date)
-    
     if data.empty:
         print("Error: No data available for the specified period")
         return
@@ -142,8 +134,8 @@ def main():
     params = StrategyParams(
         max_hold_days=args.holding_days,
         sentiment_threshold=0.4 if args.sentiment else -1.0,
-        ml_up_min_long=args.ml_long_min if args.train_ml else 0.0,
-        ml_up_max_short=args.ml_short_max if args.train_ml else 1.0,
+        ml_up_min_long=args.ml_long_min,
+        ml_up_max_short=args.ml_short_max,
     )
     strategy = VolatilityRegimeStrategy(
         data,
@@ -161,6 +153,14 @@ def main():
     print(f"Sharpe Ratio: {metrics['sharpe_ratio']:.2f}")
     print(f"Max Drawdown: {metrics['max_drawdown']:.2%}")
     print(f"CAGR: {metrics['cagr']:.2%}")
+    if "brinson_allocation" in metrics:
+        print("\nBrinson versus buy-and-hold (arithmetic effects; compounded returns below):")
+        print(f"Allocation (flat vs long): {metrics['brinson_allocation']:.2%}")
+        print(f"Selection (short vs long): {metrics['brinson_selection']:.2%}")
+        print(f"Interaction: {metrics['brinson_interaction']:.2%}")
+        print(f"Strategy return: {metrics['brinson_portfolio_return']:.2%}")
+        print(f"Buy-and-hold return: {metrics['brinson_benchmark_return']:.2%}")
+        print(f"Excess return: {metrics['brinson_excess_return']:.2%}")
     
     # Plot results if requested
     if args.plot:

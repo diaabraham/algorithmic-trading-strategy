@@ -95,7 +95,9 @@ class DataLoader:
         featured["Returns"] = featured["Close"].pct_change()
         featured["Volatility"] = featured["Returns"].rolling(window=20).std() * np.sqrt(252)
         featured["EMA_20"] = featured["Close"].ewm(span=20, adjust=False).mean()
-        featured["Vol_Percentile"] = featured["Volatility"].expanding().rank(pct=True)
+        rolling_pct = featured["Volatility"].rolling(252, min_periods=60).rank(pct=True)
+        expanding_pct = featured["Volatility"].expanding().rank(pct=True)
+        featured["Vol_Percentile"] = rolling_pct.fillna(expanding_pct)
         return featured
 
     def _frame_from_aggregate_bars(self, bars, source_name: str, ticker: str) -> pd.DataFrame:
