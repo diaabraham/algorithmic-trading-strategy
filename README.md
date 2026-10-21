@@ -17,7 +17,7 @@ A Python backtester for a volatility-regime book. In a rising market it stays lo
 ```
 algorithmic-trading-strategy/
 ├── notebooks/             # strategy1.ipynb, strategy1_clean.ipynb, strategy2.ipynb, strategy3.ipynb
-├── scripts/               # verify_real_market.py (Polygon-only check)
+├── scripts/               # verify_real_market.py (live daily bars)
 ├── src/
 │   ├── data_loader.py     # Massive, Databento, Polygon, Yahoo, Stooq
 │   ├── strategy.py        # Trend sleeve, high-vol fades, exits
@@ -138,16 +138,14 @@ python main.py --portfolio-mc --capital-cad 25000 --mc-scenarios 500 --log-level
 
 - Add `--mc-tune` or `--mc-ml` for heavier runs. Price history uses Massive, Databento, or Polygon when those keys are set, otherwise Yahoo Finance and then Stooq. `--sentiment` also needs an Alpha Vantage key.
 
-### Real market results (not unit-test placeholders)
+### Live daily bars
 
-Fast unit tests use mocks or synthetic OHLCV; they **do not** prove performance on live data.
-
-With `POLYGON_API_KEY` set (repo-root `.env`):
+`scripts/verify_real_market.py` and `tests/test_market_integration.py` pull real sessions through the provider chain (Massive, Databento, Polygon when a key is set, then Yahoo Finance, then Stooq). The SPY check covers 2025-10-21 through 2026-10-21 and requires the book to be invested in that uptrend.
 
 ```bash
 python scripts/verify_real_market.py
-python scripts/verify_real_market.py --portfolio-mc --mc-symbols SPY,NVDA --capital-cad 25000
-pytest tests/test_polygon_integration.py -v   # integration tests; skipped if key missing
+python scripts/verify_real_market.py --symbol WTI --start-date 2025-10-21 --end-date 2026-10-21
+pytest tests/test_market_integration.py -v
 ```
 
 ### Symbol Notes
