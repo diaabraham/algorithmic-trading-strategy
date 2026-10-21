@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from src.ml_signal import attach_ml_up_proba
+from src.ml_signal import attach_ml_up_proba, training_history_start
 
 
 def test_attach_ml_up_proba_adds_column():
@@ -12,3 +12,9 @@ def test_attach_ml_up_proba_adds_column():
     assert "ML_Up_Proba" in out.columns
     assert len(out) == len(df)
     assert out["ML_Up_Proba"].between(0.0, 1.0).all()
+
+
+def test_training_history_starts_before_eval_window():
+    start = training_history_start("2024-06-01")
+    assert start == (pd.Timestamp("2024-06-01") - pd.Timedelta(days=504)).date().isoformat()
+    assert start < "2024-06-01"

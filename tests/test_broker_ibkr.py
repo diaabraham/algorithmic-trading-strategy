@@ -1,5 +1,7 @@
 import asyncio
 import json
+import subprocess
+import sys
 from unittest.mock import MagicMock, patch
 
 # eventkit (pulled in by ib_insync) expects a thread loop at import time on some Python versions.
@@ -38,3 +40,40 @@ def test_place_order_qualifies_and_places(mock_stock, mock_mo):
     b.place_order(OrderRequest(symbol="SPY", side="buy", quantity=2), paper=True)
     mock_ib.qualifyContracts.assert_called_once()
     mock_ib.placeOrder.assert_called_once()
+
+
+def test_paper_mode_rejects_live_port():
+    broker = IBKRBroker("127.0.0.1", 7496, 1)
+    try:
+        broker.place_order(OrderRequest(symbol="SPY", side="buy", quantity=1), paper=True)
+    except RuntimeError as exc:
+        assert "live-trading port" in str(exc)
+    else:
+        raise AssertionError("live port was accepted in paper mode")
+
+
+def test_readonly_session_rejects_orders():
+    broker = IBKRBroker("127.0.0.1", 7497, 1, readonly=True)
+    try:
+        broker.place_order(OrderRequest(symbol="SPY", side="buy", quantity=1), paper=True)
+    except RuntimeError as exc:
+        assert "read-only" in str(exc)
+    else:
+        raise AssertionError("read-only session placed an order")
+
+
+def test_ensure_loop_allows_ib_insync_import():
+    script = (
+        "from src.broker_ibkr import _ensure_ib_event_loop\n"
+        "_ensure_ib_event_loop()\n"
+        "import ib_insync\n"
+        "print('ok')\n"
+    )
+    proc = subprocess.run(
+        [sys.executable, "-c", script],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert "ok" in proc.stdout

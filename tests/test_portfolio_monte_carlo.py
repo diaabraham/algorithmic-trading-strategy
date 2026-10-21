@@ -55,3 +55,24 @@ def test_run_portfolio_monte_carlo_smoke(monkeypatch):
     assert len(out.symbols_used) == 2
     assert out.initial_usd == pytest.approx(25_000.0 * 0.74)
     assert out.pnl_pct_p05 <= out.pnl_pct_p50 <= out.pnl_pct_p95
+
+
+def test_failed_symbol_does_not_drop_its_capital(monkeypatch):
+    def fake(symbol, *args, **kwargs):
+        if symbol == "BAD":
+            raise RuntimeError("no data")
+        return [0.0]
+
+    monkeypatch.setattr("src.portfolio_sim._trade_returns_for_symbol", fake)
+    out = run_portfolio_monte_carlo(
+        symbols=["AAA", "BAD"],
+        window_start="2025-03-01",
+        window_end="2025-06-01",
+        initial_cad=100.0,
+        cad_usd=1.0,
+        scenarios=20,
+        seed=1,
+    )
+    assert out.symbols_used == ["AAA"]
+    assert out.pnl_pct_mean == pytest.approx(0.0)
+    assert out.final_usd_p50 == pytest.approx(100.0)

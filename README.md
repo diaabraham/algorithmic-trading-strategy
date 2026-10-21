@@ -85,7 +85,9 @@ cp .env.example .env
 ```
 
 Set:
-- `POLYGON_API_KEY` (required)
+- `MASSIVE_API_KEY` (optional). Massive daily aggregates, tried first when set.
+- `DATABENTO_API_KEY` (optional). Databento `ohlcv-1d` bars. `DATABENTO_DATASET` defaults to `EQUS.SUMMARY`.
+- `POLYGON_API_KEY` (optional). When a paid key is missing or that source fails, daily bars continue to the next source, then Yahoo Finance, then Stooq.
 - `IBKR_HOST`, `IBKR_PORT`, `IBKR_CLIENT_ID` (for IBKR)
 - `IBKR_TIMEOUT` (seconds, default 15), `IBKR_READONLY` (read-only API session)
 - `IBKR_CONTRACT_JSON` (optional): full `ib_insync` `Contract` fields as JSON for futures/options (overrides plain stock routing)
@@ -104,7 +106,7 @@ Set:
 
 ### Data coverage: stocks vs options/futures
 
-- Daily OHLCV comes from **Polygon aggregates** for equities/ETFs. `WTI`/`CL`/`OIL` map to **`USO`** as a liquid proxy (avoids futures entitlements in typical starter accounts).
+- Daily OHLCV tries **Massive**, **Databento**, and **Polygon** when those keys are set, then **Yahoo Finance** (`yfinance`), then **Stooq**. `WTI`/`CL`/`OIL` map to **`USO`** as a liquid proxy (avoids futures entitlements in typical starter accounts).
 - Listed options and futures chains are **not** modeled in the backtester here; use ETF proxies (e.g. `USO`, `GLD`, index ETFs) or bring your own bars. IBKR live routing for non-stock products uses `IBKR_CONTRACT_JSON`.
 
 ### March 2026 research preset
@@ -126,7 +128,7 @@ Set:
 python main.py --portfolio-mc --capital-cad 25000 --mc-scenarios 500 --log-level WARNING
 ```
 
-- Add `--mc-tune` or `--mc-ml` for heavier runs; requires Polygon (and sentiment keys if you also pass `--sentiment`).
+- Add `--mc-tune` or `--mc-ml` for heavier runs. Price history uses Massive, Databento, or Polygon when those keys are set, otherwise Yahoo Finance and then Stooq. `--sentiment` also needs an Alpha Vantage key.
 
 ### Real market results (not unit-test placeholders)
 

@@ -16,6 +16,12 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
+def training_history_start(eval_start: str, calendar_days: int = 504) -> str:
+    """Calendar start that leaves history strictly before eval_start for training."""
+    start = pd.Timestamp(eval_start)
+    return (start - pd.Timedelta(days=calendar_days)).date().isoformat()
+
+
 def attach_ml_up_proba(
     df: pd.DataFrame,
     eval_start: Union[str, pd.Timestamp],

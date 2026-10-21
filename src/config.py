@@ -9,6 +9,9 @@ load_dotenv()
 @dataclass(frozen=True)
 class Settings:
     polygon_api_key: str
+    massive_api_key: str = ""
+    databento_api_key: str = ""
+    databento_dataset: str = "EQUS.SUMMARY"
     ibkr_host: str = "127.0.0.1"
     ibkr_port: int = 7497
     ibkr_client_id: int = 1
@@ -27,16 +30,19 @@ def _as_bool(value: str) -> bool:
 
 
 def get_settings() -> Settings:
+    # Empty keys are allowed. Missing paid sources are skipped in the data loader.
     polygon_api_key = os.getenv("POLYGON_API_KEY", "").strip()
-    if not polygon_api_key:
-        raise RuntimeError(
-            "Missing POLYGON_API_KEY. Set it in your environment or .env file."
-        )
+    massive_api_key = os.getenv("MASSIVE_API_KEY", "").strip()
+    databento_api_key = os.getenv("DATABENTO_API_KEY", "").strip()
+    databento_dataset = os.getenv("DATABENTO_DATASET", "EQUS.SUMMARY").strip() or "EQUS.SUMMARY"
 
     contract_json = os.getenv("IBKR_CONTRACT_JSON", "").strip() or None
 
     return Settings(
         polygon_api_key=polygon_api_key,
+        massive_api_key=massive_api_key,
+        databento_api_key=databento_api_key,
+        databento_dataset=databento_dataset,
         ibkr_host=os.getenv("IBKR_HOST", "127.0.0.1").strip(),
         ibkr_port=int(os.getenv("IBKR_PORT", "7497").strip()),
         ibkr_client_id=int(os.getenv("IBKR_CLIENT_ID", "1").strip()),

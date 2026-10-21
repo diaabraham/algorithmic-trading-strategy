@@ -50,11 +50,15 @@ def main() -> None:
     from src.portfolio_sim import run_portfolio_monte_carlo
     from src.strategy import StrategyParams, VolatilityRegimeStrategy
 
-    get_settings()
+    settings = get_settings()
+    if not settings.polygon_api_key:
+        raise RuntimeError(
+            "Missing POLYGON_API_KEY. Set it in your environment or .env file."
+        )
 
     print("=== Real market: single-symbol backtest (Polygon) ===")
     print(f"  {args.symbol}  {args.start_date} .. {args.end_date}")
-    loader = DataLoader(args.symbol, args.start_date, args.end_date)
+    loader = DataLoader(args.symbol, args.start_date, args.end_date, sources=("polygon",))
     data = loader.get_data()
     if data.empty:
         print("ERROR: no bars returned.")

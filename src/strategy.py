@@ -50,6 +50,8 @@ class VolatilityRegimeStrategy:
         self.current_trade = None
         self.entry_atr = None
         self.entry_signal_strength = None
+        self.entry_style = None
+        self.entry_index = None
         self.eval_start_date = pd.to_datetime(eval_start_date, utc=True) if eval_start_date else None
         
     def generate_signals(self) -> pd.DataFrame:
@@ -75,8 +77,8 @@ class VolatilityRegimeStrategy:
         rs = gain / loss
         self.data['RSI'] = 100 - (100 / (1 + rs))
         
-        # Fill NaN values
-        self.data = self.data.ffill().bfill()
+        # Forward-fill only. Back-fill would copy later bars into earlier ones.
+        self.data = self.data.ffill()
         
         # Generate signals with stricter regime + trend context filters.
         high_vol_regime = self.data['Vol_Percentile'] > self.params.vol_threshold
@@ -118,8 +120,11 @@ class VolatilityRegimeStrategy:
         )
 
         signals['long_entry'] = mean_reversion_long | momentum_long
-        
         signals['short_entry'] = mean_reversion_short | momentum_short
+        # Style flags stay independent of the entry filters below so an entry
+        # that survives the filters still knows which exit rules apply.
+        signals['long_momentum'] = momentum_long
+        signals['short_momentum'] = momentum_short
 
         if self.params.sentiment_threshold >= 0 and "News_Sentiment" in self.data.columns:
             sentiment = self.data["News_Sentiment"].fillna(0)
@@ -130,6 +135,9 @@ class VolatilityRegimeStrategy:
             m = self.data["ML_Up_Proba"].fillna(0.5).clip(0.0, 1.0)
             signals["long_entry"] = signals["long_entry"] & (m >= self.params.ml_up_min_long)
             signals["short_entry"] = signals["short_entry"] & (m <= self.params.ml_up_max_short)
+
+        for col in ("long_entry", "short_entry", "long_momentum", "short_momentum"):
+            signals[col] = signals[col].fillna(False)
 
         return signals
         
@@ -147,6 +155,8 @@ class VolatilityRegimeStrategy:
         self.current_trade = None
         self.entry_atr = None
         self.entry_signal_strength = None
+        self.entry_style = None
+        self.entry_index = None
         
         for i in range(len(self.data)):
             if i < 20:  # Skip the first 20 days
@@ -165,43 +175,42 @@ class VolatilityRegimeStrategy:
             # Check for exit signals first
             if self.position != 0 and self.current_trade is not None:
                 exit_signal = False
-                stop_loss = False
-                take_profit = False
-                
-                # Mean reversion exit
-                if (self.position == 1 and price_deviation > -self.params.mean_reversion_exit_z * deviation_std) or \
-                   (self.position == -1 and price_deviation < self.params.mean_reversion_exit_z * deviation_std):
-                    exit_signal = True
-                
-                # RSI extreme exit
-                elif (self.position == 1 and rsi > 55) or (self.position == -1 and rsi < 45):
-                    exit_signal = True
-                
+                held_bars = i - self.entry_index
+                self.current_trade.holding_period = held_bars
+                # Mean-reversion fades and RSI exits contradict momentum entries:
+                # a long breakout is, by definition, above the mean with RSI > 55.
+                mean_reversion_style = self.entry_style != "momentum"
+
+                if mean_reversion_style:
+                    if (self.position == 1 and price_deviation > -self.params.mean_reversion_exit_z * deviation_std) or \
+                       (self.position == -1 and price_deviation < self.params.mean_reversion_exit_z * deviation_std):
+                        exit_signal = True
+                    elif (self.position == 1 and rsi > 55) or (self.position == -1 and rsi < 45):
+                        exit_signal = True
+
                 # ATR-based stop/target helps prevent large losers in extended volatility.
-                elif self.entry_atr is not None and self.entry_atr > 0:
+                if not exit_signal and self.entry_atr is not None and self.entry_atr > 0:
                     if self.position == 1:
                         stop_loss = current_price <= (self.current_trade.entry_price - self.params.atr_stop_mult * self.entry_atr)
                         take_profit = current_price >= (self.current_trade.entry_price + self.params.atr_take_mult * self.entry_atr)
                     else:
                         stop_loss = current_price >= (self.current_trade.entry_price + self.params.atr_stop_mult * self.entry_atr)
                         take_profit = current_price <= (self.current_trade.entry_price - self.params.atr_take_mult * self.entry_atr)
-
                     if stop_loss or take_profit:
                         exit_signal = True
 
-                # Fallback deviation stop loss
-                elif (self.position == 1 and price_deviation < -self.params.stop_z_fallback * deviation_std) or \
-                     (self.position == -1 and price_deviation > self.params.stop_z_fallback * deviation_std):
-                    exit_signal = True
-                
-                # Time-based exit (5 trading days equivalent)
-                elif self.current_trade.holding_period >= self.params.max_hold_days:
+                if not exit_signal:
+                    if (self.position == 1 and price_deviation < -self.params.stop_z_fallback * deviation_std) or \
+                       (self.position == -1 and price_deviation > self.params.stop_z_fallback * deviation_std):
+                        exit_signal = True
+
+                # max_hold_days counts trading bars, not calendar days.
+                if not exit_signal and held_bars >= self.params.max_hold_days:
                     exit_signal = True
                 
                 if exit_signal:
                     self.current_trade.exit_date = current_date
                     self.current_trade.exit_price = current_price
-                    self.current_trade.holding_period = (current_date - self.current_trade.entry_date).days
                     
                     if self.position == 1:
                         self.current_trade.pnl = (current_price - self.current_trade.entry_price) / self.current_trade.entry_price
@@ -213,11 +222,15 @@ class VolatilityRegimeStrategy:
                     self.current_trade = None
                     self.entry_atr = None
                     self.entry_signal_strength = None
+                    self.entry_style = None
+                    self.entry_index = None
             
             # Check for entry signals
             elif self.position == 0:
                 if signals['long_entry'].iloc[i]:
                     self.position = 1
+                    self.entry_style = "momentum" if bool(signals['long_momentum'].iloc[i]) else "mean_reversion"
+                    self.entry_index = i
                     self.current_trade = Trade(
                         entry_date=current_date,
                         exit_date=None,
@@ -232,6 +245,8 @@ class VolatilityRegimeStrategy:
                     
                 elif signals['short_entry'].iloc[i]:
                     self.position = -1
+                    self.entry_style = "momentum" if bool(signals['short_momentum'].iloc[i]) else "mean_reversion"
+                    self.entry_index = i
                     self.current_trade = Trade(
                         entry_date=current_date,
                         exit_date=None,
@@ -243,15 +258,14 @@ class VolatilityRegimeStrategy:
                     )
                     self.entry_atr = atr if not np.isnan(atr) else None
                     self.entry_signal_strength = abs(price_deviation / (deviation_std + 1e-9))
-            
-            if self.current_trade is not None:
-                self.current_trade.holding_period = (current_date - self.current_trade.entry_date).days
         
-        # Close any remaining open trade
+        # Close any remaining open trade. Leave self.position set so live
+        # routing can tell a still-open position from a flat book.
         if self.current_trade is not None:
             self.current_trade.exit_date = self.data.index[-1]
             self.current_trade.exit_price = self.data['Close'].iloc[-1]
-            self.current_trade.holding_period = (self.current_trade.exit_date - self.current_trade.entry_date).days
+            if self.entry_index is not None:
+                self.current_trade.holding_period = (len(self.data) - 1) - self.entry_index
             
             if self.position == 1:
                 self.current_trade.pnl = (self.current_trade.exit_price - self.current_trade.entry_price) / self.current_trade.entry_price
@@ -261,6 +275,21 @@ class VolatilityRegimeStrategy:
             self.trades.append(self.current_trade)
         
         return self.calculate_metrics()
+
+    def _strategy_daily_returns(self) -> pd.Series:
+        """Close-to-close strategy returns, including flat days as zero."""
+        idx = self.data.index
+        position = pd.Series(0.0, index=idx)
+        for trade in self.trades:
+            if trade.entry_date is None or trade.exit_date is None:
+                continue
+            held = (idx > trade.entry_date) & (idx <= trade.exit_date)
+            position.loc[held] = float(trade.position)
+        asset = self.data["Close"].astype(float).pct_change().fillna(0.0)
+        strat = position * asset
+        if self.eval_start_date is not None:
+            strat = strat.loc[idx >= self.eval_start_date]
+        return strat.replace([np.inf, -np.inf], 0.0).fillna(0.0)
         
     def calculate_metrics(self) -> Dict:
         """
@@ -288,22 +317,29 @@ class VolatilityRegimeStrategy:
         returns = [trade.pnl for trade in self.trades]
         avg_return = np.mean(returns)
         
-        # Calculate Sharpe ratio
-        risk_free_rate = 0.02  # 2% annual risk-free rate
-        excess_returns = np.array(returns) - risk_free_rate/252
-        returns_std = np.std(excess_returns)
-        sharpe_ratio = 0 if returns_std == 0 else (np.sqrt(252) * np.mean(excess_returns) / returns_std)
+        daily = self._strategy_daily_returns()
+        if len(daily) == 0:
+            sharpe_ratio = 0.0
+            max_drawdown = 0.0
+        else:
+            # Per-trade returns are not daily observations; scale the daily book.
+            excess = daily.to_numpy(dtype=float) - (0.02 / 252)
+            returns_std = float(np.std(excess))
+            sharpe_ratio = 0.0 if returns_std == 0 else float(np.sqrt(252) * np.mean(excess) / returns_std)
+            equity = np.cumprod(1.0 + daily.to_numpy(dtype=float))
+            peak = np.maximum.accumulate(equity)
+            max_drawdown = float(np.min(equity / peak - 1.0))
         
-        # Calculate max drawdown
-        cumulative_returns = np.cumprod(1 + np.array(returns))
-        rolling_max = np.maximum.accumulate(cumulative_returns)
-        drawdowns = (cumulative_returns - rolling_max) / rolling_max
-        max_drawdown = np.min(drawdowns)
-        
-        # Calculate CAGR
-        total_return = np.prod(1 + np.array(returns)) - 1
-        years = (self.data.index[-1] - self.data.index[0]).days / 365
-        cagr = (1 + total_return) ** (1/years) - 1
+        # CAGR uses the evaluation window, not indicator warmup before it.
+        total_return = float(np.prod(1 + np.array(returns)) - 1)
+        window_start = self.data.index[0]
+        if self.eval_start_date is not None and self.eval_start_date > window_start:
+            window_start = self.eval_start_date
+        span_days = (self.data.index[-1] - window_start).days
+        if span_days <= 0 or total_return <= -1.0:
+            cagr = total_return if total_return > -1.0 else -1.0
+        else:
+            cagr = float((1.0 + total_return) ** (1.0 / (span_days / 365.0)) - 1.0)
         
         return {
             'total_trades': total_trades,

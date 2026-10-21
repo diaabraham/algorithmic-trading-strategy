@@ -97,7 +97,12 @@ def optimize_for_period(
     best = None
     best_score = -1e9
     for params in grid:
-        metrics = _run_on_data(symbol=symbol, data=base_data, params=params)
+        metrics = _run_on_data(
+            symbol=symbol,
+            data=base_data,
+            params=params,
+            eval_start_date=start_date,
+        )
         # Reward win rate and avg return; penalize drawdown.
         score = (
             metrics["win_rate"] * 100

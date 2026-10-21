@@ -141,7 +141,6 @@ def run_portfolio_monte_carlo(
     if n == 0:
         raise ValueError("symbols must be non-empty")
 
-    per = usd0 / n
     by_sym: dict[str, List[float]] = {}
     used: List[str] = []
     for sym in symbols:
@@ -164,8 +163,13 @@ def run_portfolio_monte_carlo(
         used.append(s)
 
     if not used:
-        raise RuntimeError("No symbols produced trades; check data/API and date window.")
+        raise RuntimeError(
+            "No symbols could be loaded. Check the Polygon API key, symbols, and date window."
+        )
 
+    # A symbol that failed to load is dropped. Split the book across the names
+    # that did load so the missing slice is not reported as a total loss.
+    per = usd0 / len(used)
     rng = np.random.default_rng(seed)
     pnl_samples = np.empty(scenarios, dtype=float)
     for i in range(scenarios):

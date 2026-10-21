@@ -9,6 +9,15 @@ def resolve_order_symbol(symbol: str) -> str:
     return _STOCK_ROUTE_ALIASES.get(s, s)
 
 
+def open_position_side(position: int) -> str | None:
+    """Map an open backtest position to an order side. Flat is not an order."""
+    if position == 1:
+        return "long"
+    if position == -1:
+        return "short"
+    return None
+
+
 class LiveTradingEngine:
     def __init__(self, settings: Settings):
         self.settings = settings

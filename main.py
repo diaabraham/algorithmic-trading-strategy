@@ -5,7 +5,7 @@ from src.data_loader import DataLoader
 from src.strategy import VolatilityRegimeStrategy, StrategyParams
 from src.visualization import StrategyVisualizer
 from src.config import get_settings
-from src.live_trading import LiveTradingEngine
+from src.live_trading import LiveTradingEngine, open_position_side
 from src.model_runner import run_rigorous_suite
 from src.portfolio_sim import MARCH_2026_HIGH_BETA_UNIVERSE, run_portfolio_monte_carlo
 
@@ -71,7 +71,7 @@ def main():
         print("\nPortfolio Monte Carlo (equal-weight slices, bootstrap trade returns):")
         print(f"  Symbols used: {report.symbols_used}")
         print(f"  Scenarios: {report.scenarios}  Initial USD (from CAD): ${report.initial_usd:,.2f}")
-        print(f"  PnL %%  mean={report.pnl_pct_mean:.2%}  p05={report.pnl_pct_p05:.2%}  p50={report.pnl_pct_p50:.2%}  p95={report.pnl_pct_p95:.2%}")
+        print(f"  PnL %  mean={report.pnl_pct_mean:.2%}  p05={report.pnl_pct_p05:.2%}  p50={report.pnl_pct_p50:.2%}  p95={report.pnl_pct_p95:.2%}")
         print(
             f"  Final USD  p05=${report.final_usd_p05:,.2f}  p50=${report.final_usd_p50:,.2f}  p95=${report.final_usd_p95:,.2f}"
         )
@@ -101,11 +101,23 @@ def main():
         print(f"Overall weighted avg return: {weighted_avg:.2%}")
         return
 
+    load_start = args.start_date
+    eval_start = None
+    if args.train_ml:
+        from src.ml_signal import training_history_start
+
+        # The model can only train on bars strictly before the backtest window.
+        load_start = training_history_start(args.start_date)
+        eval_start = args.start_date
+
     print(f"Running backtest for {args.symbol} from {args.start_date} to {args.end_date}")
     print(f"Initial capital: ${args.initial_capital:,.2f}")
 
-    data_loader = DataLoader(args.symbol, args.start_date, args.end_date)
+    data_loader = DataLoader(args.symbol, load_start, args.end_date)
     data = data_loader.get_data()
+    print(f"Data source: {data_loader.data_source} ({data_loader.symbol}, {len(data)} rows)")
+    source = getattr(data_loader, "data_source", "") or "unknown"
+    print(f"Data source: {source} ({data_loader.symbol})")
     if args.sentiment:
         from src.sentiment import combined_sentiment
         sentiment_score = combined_sentiment(
@@ -133,7 +145,12 @@ def main():
         ml_up_min_long=args.ml_long_min if args.train_ml else 0.0,
         ml_up_max_short=args.ml_short_max if args.train_ml else 1.0,
     )
-    strategy = VolatilityRegimeStrategy(data, args.initial_capital, params=params)
+    strategy = VolatilityRegimeStrategy(
+        data,
+        args.initial_capital,
+        params=params,
+        eval_start_date=eval_start,
+    )
     metrics = strategy.run_backtest()
     
     # Print performance metrics
@@ -161,15 +178,16 @@ def main():
                 "Live routing blocked by quality gate: strategy metrics are below minimum thresholds "
                 "(requires Sharpe>0, CAGR>0, WinRate>=45%)."
             )
-        if strategy.trades:
-            latest_trade = strategy.trades[-1]
-            latest_signal = "long" if latest_trade.position == 1 else "short"
+        side = open_position_side(strategy.position)
+        if side is None:
+            print("No open position on the final bar; live order not sent.")
+        else:
             engine = LiveTradingEngine(settings)
             engine.connect()
             try:
                 last_price = float(data["Close"].iloc[-1]) if not data.empty else None
                 routed_symbol = getattr(data_loader, "symbol", None) or args.symbol
-                engine.submit_signal(routed_symbol, latest_signal, args.order_qty, last_price=last_price)
+                engine.submit_signal(routed_symbol, side, args.order_qty, last_price=last_price)
                 mode = "paper" if settings.paper_trading_enabled else "live"
                 print(f"{mode.capitalize()} order submitted to IBKR.")
             finally:
