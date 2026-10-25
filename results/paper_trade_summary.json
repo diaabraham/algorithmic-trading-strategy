@@ -1,13 +1,62 @@
 {
-  "tag": "paper-trade-v1",
-  "rule": "none_voltarget",
-  "freeze_decision_date": "2026-10-23",
-  "live_start": "2026-10-26",
-  "weight_at_freeze": 1.5,
-  "judged_at": [
-    "12 months",
-    "24 months"
+  "updated_on": "2026-10-25",
+  "pass_rule": "CAGR net of costs above SPY total return (2 bp entry) over the same live window",
+  "judged_at_months": [
+    12,
+    24
   ],
-  "pass_rule": "CAGR net of costs above SPY buy-and-hold over the same live window",
-  "status": "no live bars yet"
+  "v1": {
+    "tag": "paper-trade-v1",
+    "rule": "none_voltarget (SPY volatility targeting)",
+    "frequency": "daily",
+    "freeze_decision_date": "2026-10-23",
+    "live_start": "2026-10-26",
+    "weight_at_freeze": 1.5,
+    "measurable": "daily, from the first close after the 2026-10-26 open fill",
+    "status": "no live bars yet",
+    "checkpoints": {
+      "12_months": {
+        "window_end": "2027-10-26",
+        "status": "pending"
+      },
+      "24_months": {
+        "window_end": "2028-10-26",
+        "status": "pending"
+      }
+    }
+  },
+  "v2": {
+    "tag": "paper-trade-v2",
+    "rule": "L0_momentum_top10 (study 5)",
+    "frequency": "monthly",
+    "freeze_date": "2026-10-25",
+    "first_decision": "2024-12-31",
+    "first_live_holding_month": "2026-11",
+    "data": {
+      "cz_release": "release202510",
+      "cz_data_end": "2024-12-31",
+      "industries_data_end": "2026-08-31",
+      "fetched_on": "2026-10-25"
+    },
+    "measurable": "when a Chen-Zimmermann release covers the month; the anomaly legs are not priced in real time, so decisions and returns are filled in from published portfolio returns",
+    "latest_logged_decision": {
+      "decision_month_end": "2024-12-31",
+      "holding_month_end": "2025-01-31",
+      "phase": "pre_live_not_judged",
+      "names": "Tail risk beta (high decile; Kelly and Jiang 2014); Total accruals (low decile; Richardson et al. 2005); Frazzini-Pedersen Beta (high decile; Frazzini and Pedersen 2014); Net debt financing (low decile; Bradshaw, Richardson, Sloan 2006); Junk Stock Momentum (high decile; Avramov et al 2007); Momentum without the seasonal part (high decile; Heston and Sadka 2008); Intermediate Momentum (high decile; Novy-Marx 2012); Firm Age - Momentum (high decile; Zhang 2006); Asset growth (low decile; Cooper, Gulen and Schill 2008); Change in equity to assets (low decile; Richardson et al. 2005)"
+    },
+    "checkpoints": {
+      "12_months": {
+        "window": "2026-11..2027-10",
+        "status": "pending",
+        "needs_data_through": "2027-10"
+      },
+      "24_months": {
+        "window": "2026-11..2028-10",
+        "status": "pending",
+        "needs_data_through": "2028-10"
+      }
+    },
+    "status": "no live returns yet"
+  }
 }
