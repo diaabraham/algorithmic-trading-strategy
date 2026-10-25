@@ -1,0 +1,576 @@
+{
+  "protocol": "results/study3_protocol.md",
+  "dev_period": [
+    "2000-01-03",
+    "2023-12-31"
+  ],
+  "configs_tried": 13,
+  "selected": "none_voltarget",
+  "selected_dev": {
+    "config": "none_voltarget",
+    "model": "none",
+    "rule": "voltarget",
+    "start": "2000-01-03",
+    "end": "2023-12-29",
+    "cagr": 0.08443937154109116,
+    "total_return": 5.97252212762971,
+    "ann_vol": 0.18209995142663932,
+    "sharpe": 0.4457131634290226,
+    "max_drawdown": -0.4446935507989037,
+    "avg_gross_leverage": 1.1436677196304066,
+    "max_gross_leverage": 1.5936421419163944,
+    "turnover_per_year": 0.9453548590661093,
+    "costs_per_year": 0.00018907097181322186,
+    "bh_cagr": 0.06919918380762158,
+    "bh_sharpe": 0.3547923842931432,
+    "bh_max_drawdown": -0.5520233733421962,
+    "bh_ann_vol": 0.19630684567002515,
+    "beats_bh_cagr": true,
+    "rolling3y_win_rate": 0.7347595607724347,
+    "sub_2000_2009_cagr": 0.014666372551825013,
+    "sub_2010_2019_cagr": 0.15724647625370447,
+    "sub_2020_2023_cagr_contaminated": 0.08850585949125023,
+    "active_sharpe": 0.1486693335666469
+  },
+  "spy_bh_dev": {
+    "start": "2000-01-03",
+    "end": "2023-12-29",
+    "cagr": 0.06919918380762158,
+    "total_return": 3.9675061519938666,
+    "ann_vol": 0.19630684567002515,
+    "sharpe": 0.3547923842931432,
+    "max_drawdown": -0.5520233733421962,
+    "avg_gross_leverage": 1.0002077911375755,
+    "max_gross_leverage": 1.000511073381299,
+    "turnover_per_year": 0.041742587377836676,
+    "costs_per_year": 8.348517475567336e-06
+  },
+  "deflated_sharpe_active_N13": {
+    "trials": 13,
+    "sharpe_annual": 0.1486693335666469,
+    "expected_max_sharpe_under_null_annual": 0.2010332613721366,
+    "deflated_sharpe_ratio": 0.39943869027798895,
+    "probabilistic_sharpe_vs_zero": 0.7652882998505584,
+    "skew": -1.131352476648033,
+    "kurtosis": 47.30144756327715,
+    "observations": 6037
+  },
+  "deflated_sharpe_active_N45": {
+    "trials": 45,
+    "sharpe_annual": 0.1486693335666469,
+    "expected_max_sharpe_under_null_annual": 0.2638579137615858,
+    "deflated_sharpe_ratio": 0.28756858345239855,
+    "probabilistic_sharpe_vs_zero": 0.7652882998505584,
+    "skew": -1.131352476648033,
+    "kurtosis": 47.30144756327715,
+    "observations": 6037
+  },
+  "criterion_dev": {
+    "1_dev_cagr_beats_spy": true,
+    "4_dsr_ge_0.95": false,
+    "5_rolling3y_win_ge_0.60": true
+  },
+  "hyperparameters_chosen": {
+    "ridge": [
+      [
+        "1998-05-01",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "1999-01-04",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2000-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2001-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2002-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2003-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2004-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2005-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2006-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2007-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2008-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2009-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2010-01-04",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2011-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2012-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2013-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2014-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2015-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2016-01-04",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2017-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2018-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2019-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2020-01-02",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2021-01-04",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2022-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ],
+      [
+        "2023-01-03",
+        {
+          "alpha": 1000.0
+        }
+      ]
+    ],
+    "lgbm": [
+      [
+        "1998-05-01",
+        {
+          "num_leaves": 15,
+          "min_child_samples": 50
+        }
+      ],
+      [
+        "1999-01-04",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2000-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2001-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2002-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2003-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2004-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2005-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2006-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2007-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2008-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2009-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2010-01-04",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2011-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2012-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2013-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2014-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2015-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2016-01-04",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2017-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2018-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2019-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2020-01-02",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2021-01-04",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2022-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ],
+      [
+        "2023-01-03",
+        {
+          "num_leaves": 7,
+          "min_child_samples": 200
+        }
+      ]
+    ],
+    "mlp": [
+      [
+        "1998-05-01",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "1999-01-04",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2000-01-03",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2001-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2002-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2003-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2004-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2005-01-03",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2006-01-03",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2007-01-03",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2008-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2009-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2010-01-04",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2011-01-03",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2012-01-03",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2013-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2014-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2015-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2016-01-04",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2017-01-03",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2018-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2019-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2020-01-02",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2021-01-04",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2022-01-03",
+        {
+          "alpha": 0.1
+        }
+      ],
+      [
+        "2023-01-03",
+        {
+          "alpha": 0.1
+        }
+      ]
+    ]
+  },
+  "runtime_seconds": 366.0984754562378
+}
