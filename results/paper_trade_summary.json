@@ -1,0 +1,13 @@
+{
+  "tag": "paper-trade-v1",
+  "rule": "none_voltarget",
+  "freeze_decision_date": "2026-10-23",
+  "live_start": "2026-10-26",
+  "weight_at_freeze": 1.5,
+  "judged_at": [
+    "12 months",
+    "24 months"
+  ],
+  "pass_rule": "CAGR net of costs above SPY buy-and-hold over the same live window",
+  "status": "no live bars yet"
+}

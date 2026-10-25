@@ -191,6 +191,22 @@ rate 73%) passed. Criteria 2 (SPY 2024+), 3 (0 of 6 cross-market holdouts) and
 * The results are in `results/study3_dev.json` and
   `results/study3_holdout.json`.
 
+### Live paper test of the frozen study 3 rule
+
+The study 3 rule (`none_voltarget`) is frozen at tag `paper-trade-v1`
+(commit `cfd8a9f`).
+
+* **Rule.** SPY weight = long-run vol / 63-day vol, clipped to 0-1.5x.
+  Decided at the Friday close, filled at the next open.
+* **Start.** The live test begins with the fill at the 2026-10-26 open, after
+  the decision at the 2026-10-23 close.
+* **Update.** `python scripts/paper_trade_update.py` rewrites
+  `results/paper_trade_live.csv` and `results/paper_trade_summary.json` from
+  that date onward.
+* **How it is judged.** After 12 and 24 months: it passes only if its CAGR,
+  net of 2 bp costs and T-bill + 50 bp financing, is above SPY buy-and-hold
+  over the same live window. Nothing about the rule changes in the meantime.
+
 ## How the strategy works
 
 1. **Volatility regime.** 20-day realised volatility, ranked over the last 252
@@ -274,6 +290,7 @@ algorithmic-trading-strategy/
 │   ├── run_oos_study.py    # Study 1
 │   ├── run_preregistered_study.py  # Study 2 (pre-registered)
 │   ├── run_ml_study.py     # Study 3 (walk-forward ML)
+│   ├── paper_trade_update.py  # Live paper test of the frozen study 3 rule
 │   └── verify_real_market.py
 ├── src/
 │   ├── strategy.py         # Volatility regime strategy
