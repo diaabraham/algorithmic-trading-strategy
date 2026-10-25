@@ -1,6 +1,24 @@
+# Environment and secrets
 .env
 venv/
+.venv/
+
+# Python
 __pycache__/
 *.pyc
+.pytest_cache/
+
+# Notebooks and editors
 .ipynb_checkpoints/
-notebooks/.ipynb_checkpoints/
+.idea/
+.vscode/
+.DS_Store
+
+# JavaScript tooling (not used by this project)
+node_modules/
+package.json
+package-lock.json
+
+# Generated output
+plots/*.png
+data/cache/
