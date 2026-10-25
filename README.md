@@ -269,21 +269,50 @@ the US, but in the US since 2000 it only tied SPY after costs.
   value and profitability) and fees. Listed ETFs (MTUM, VLUE, QUAL, USMV)
   implement similar but not identical rules for 0.15-0.25%/yr.
 
-### Live paper test of the frozen study 3 rule
+### Live paper tests of the frozen rules
 
-The study 3 rule (`none_voltarget`) is frozen at tag `paper-trade-v1`
-(commit `cfd8a9f`).
+Two rules are tracked live against SPY. Neither changes during the test.
 
-* **Rule.** SPY weight = long-run vol / 63-day vol, clipped to 0-1.5x.
-  Decided at the Friday close, filled at the next open.
-* **Start.** The live test begins with the fill at the 2026-10-26 open, after
-  the decision at the 2026-10-23 close.
-* **Update.** `python scripts/paper_trade_update.py` rewrites
-  `results/paper_trade_live.csv` and `results/paper_trade_summary.json` from
-  that date onward.
-* **How it is judged.** After 12 and 24 months: it passes only if its CAGR,
-  net of 2 bp costs and T-bill + 50 bp financing, is above SPY buy-and-hold
-  over the same live window. Nothing about the rule changes in the meantime.
+| | paper-trade-v1 | paper-trade-v2 |
+|---|---|---|
+| Rule | Study 3 `none_voltarget`: SPY weight = long-run vol / 63-day vol, clipped to 0-1.5x, decided at the Friday close and filled at the next open | Study 5 `L0`: top-10 by 2-12 month momentum across 179 published-anomaly legs and the 49 French industries, monthly |
+| Frozen at | tag `paper-trade-v1` (`cfd8a9f`) | tag `paper-trade-v2`, [`results/paper_trade_v2_frozen.md`](results/paper_trade_v2_frozen.md) |
+| Live window starts | 2026-10-26 open fill | holding month 2026-11 |
+| Prices | daily SPY bars (Yahoo), measurable every trading day | published Chen-Zimmermann portfolio returns and French industries; see below |
+| Costs | 2 bp per side, T-bill + 50 bp financing | study 5 costs: 20 bp per side for anomaly legs, 10 bp for industries, plus turnover drag |
+| Output | `results/paper_trade_live_v1.csv` | `results/paper_trade_live_v2_picks.csv` (append-only), `results/paper_trade_live_v2.csv` |
+
+**How v2 is measured.** The anomaly legs are not priced in real time.
+Chen-Zimmermann publish their portfolio returns about once a year, roughly 10
+months after each year ends. The current release has data through 2024-12.
+French industries lag about a month.
+
+Each v2 decision is therefore logged when the first release covering its
+decision month appears. It is never recomputed afterwards. Returns are filled in
+from the published portfolio returns once they come out. The freeze date and the
+append-only log show that no pick was chosen with hindsight.
+
+There is no ETF proxy in the official result. Expect:
+
+* first live v2 returns around late 2027;
+* the 12-month verdict around late 2028.
+
+Holding months 2025-01 to 2026-10 are also tracked, labelled
+`pre_live_not_judged`. They come before the freeze and do not count.
+
+**Judging rule (both rules).** At 12 and 24 months of live window, each rule
+passes only if its CAGR after costs beats SPY total return over the same live
+window. SPY is charged 2 bp at entry. A rule that fails stays failed.
+
+**Monthly update.** Run:
+
+```bash
+pip install -U openassetpricing && python scripts/paper_trade_update.py
+```
+
+Upgrading the package is how new Chen-Zimmermann releases are picked up. Read
+`results/paper_trade_summary.json`: it has the v1 and v2 status, the latest v2
+picks, the data vintages, and the 12- and 24-month checkpoints vs SPY.
 
 ## Study 5: machine learning over published anomalies and industries (pre-registered, failed)
 
@@ -354,6 +383,14 @@ published anomaly portfolios and industries to hold. The steps were:
 
 The pre-registered rule (highest development CAGR) selected L0. The ML
 combiners did not beat plain momentum.
+
+**Erratum.** L0's study code did not apply the publication filter. See
+[`results/study5_erratum.md`](results/study5_erratum.md). Corrected figures:
+
+* development CAGR 16.47% instead of 16.75%;
+* holdout CAGR 18.35% instead of 18.38%.
+
+The selection and the verdict are unchanged. The live tracker applies the filter.
 
 **Holdout (2015-01 to 2024-12, run once, vs SPY)**
 
@@ -515,7 +552,7 @@ algorithmic-trading-strategy/
 │   ├── run_oos_study.py    # Study 1
 │   ├── run_preregistered_study.py  # Study 2 (pre-registered)
 │   ├── run_ml_study.py     # Study 3 (walk-forward ML)
-│   ├── paper_trade_update.py  # Live paper test of the frozen study 3 rule
+│   ├── paper_trade_update.py  # Live paper tests of paper-trade-v1 and paper-trade-v2
 │   ├── run_factor_study.py # Study 4 (factor tilts, Ken French data)
 │   ├── run_study5.py       # Study 5 (ML over published anomalies and industries)
 │   ├── study5_gpu_driver.py # Study 5 MLP walk-forward on an AMD GPU (DirectML) or CPU
@@ -528,7 +565,7 @@ algorithmic-trading-strategy/
 │   ├── candidates.py       # Study 2 pre-registered candidates
 │   ├── ml_research/        # Study 3 walk-forward ML pipeline
 │   ├── factor_study.py     # Study 4 data, costs and statistics
-│   ├── study5/             # Study 5 data, panel, walk-forward and evaluation
+│   ├── study5/             # Study 5 data, panel, walk-forward, evaluation and live L0 tracker
 │   ├── data_loader.py      # Data providers and features
 │   ├── ml_signal.py        # Walk-forward RandomForest
 │   ├── black_scholes.py    # Realised-vol cone and N(d2)

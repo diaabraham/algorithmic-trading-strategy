@@ -1,0 +1,229 @@
+asset,kind,name,pub_year,category,portfolio_period,turnover_per_year,cost_per_side
+AM,anomaly long leg,Total assets to market (high decile; Fama and French 1992),1992,Accounting,12.0,0.5,0.002
+AOP,anomaly long leg,Analyst Optimism (low decile; Frankel and Lee 1998),1998,Analyst,12.0,0.5,0.002
+AbnormalAccruals,anomaly long leg,Abnormal Accruals (low decile; Xie 2001),2001,Accounting,12.0,0.5,0.002
+Accruals,anomaly long leg,Accruals (low decile; Sloan 1996),1996,Accounting,12.0,0.5,0.002
+Activism1,anomaly long leg,Takeover vulnerability (high decile; Cremers and Nair 2005),2005,13F,1.0,1.5,0.002
+Activism2,anomaly long leg,Active shareholders (high decile; Cremers and Nair 2005),2005,13F,1.0,1.5,0.002
+AdExp,anomaly long leg,"Advertising Expense (high decile; Chan, Lakonishok and Sougiannis 2001)",2001,Accounting,12.0,0.5,0.002
+AgeIPO,anomaly long leg,IPO and age (high decile; Ritter 1991),1991,Event,1.0,1.5,0.002
+AnalystRevision,anomaly long leg,"EPS forecast revision (high decile; Hawkins, Chamberlin, Daniel 1984)",1984,Analyst,1.0,1.5,0.002
+AnalystValue,anomaly long leg,Analyst Value (high decile; Frankel and Lee 1998),1998,Analyst,12.0,0.5,0.002
+AnnouncementReturn,anomaly long leg,"Earnings announcement return (high decile; Chan, Jegadeesh and Lakonishok 1996)",1996,Price,1.0,3.0,0.002
+AssetGrowth,anomaly long leg,"Asset growth (low decile; Cooper, Gulen and Schill 2008)",2008,Accounting,12.0,0.5,0.002
+BM,anomaly long leg,"Book to market, original (Stattman 1980) (high decile; Stattman 1980)",1980,Accounting,12.0,0.5,0.002
+BMdec,anomaly long leg,Book to market using December ME (high decile; Fama and French 1992),1992,Accounting,12.0,0.5,0.002
+BPEBM,anomaly long leg,"Leverage component of BM (low decile; Penman, Richardson and Tuna 2007)",2007,Accounting,12.0,0.5,0.002
+Beta,anomaly long leg,CAPM beta (high decile; Fama and MacBeth 1973),1973,Price,1.0,3.0,0.002
+BetaFP,anomaly long leg,Frazzini-Pedersen Beta (high decile; Frazzini and Pedersen 2014),2014,Price,1.0,3.0,0.002
+BetaLiquidityPS,anomaly long leg,Pastor-Stambaugh liquidity beta (high decile; Pastor and Stambaugh 2003),2003,Price,12.0,0.5,0.002
+BetaTailRisk,anomaly long leg,Tail risk beta (high decile; Kelly and Jiang 2014),2014,Price,12.0,0.5,0.002
+BidAskSpread,anomaly long leg,Bid-ask spread (high decile; Amihud and Mendelson 1986),1986,Trading,1.0,3.0,0.002
+BookLeverage,anomaly long leg,Book leverage (annual) (low decile; Fama and French 1992),1992,Accounting,12.0,0.5,0.002
+BrandInvest,anomaly long leg,"Brand capital investment (low decile; Belo, Lin and Vitorino 2014)",2014,Accounting,12.0,0.5,0.002
+CBOperProf,anomaly long leg,Cash-based operating profitability (high decile; Ball et al. 2016),2016,Accounting,12.0,0.5,0.002
+CF,anomaly long leg,"Cash flow to market (high decile; Lakonishok, Shleifer, Vishny 1994)",1994,Accounting,12.0,0.5,0.002
+CPVolSpread,anomaly long leg,Call minus Put Vol (high decile; Bali and Hovakimian 2009),2009,Options,1.0,1.5,0.002
+Cash,anomaly long leg,Cash to assets (high decile; Palazzo 2012),2012,Accounting,1.0,1.5,0.002
+CashProd,anomaly long leg,Cash Productivity (low decile; Chandrashekar and Rao 2009),2009,Accounting,1.0,1.5,0.002
+ChAssetTurnover,anomaly long leg,Change in Asset Turnover (high decile; Soliman 2008),2008,Accounting,12.0,0.5,0.002
+ChEQ,anomaly long leg,Growth in book equity (low decile; Lockwood and Prombutr 2010),2010,Accounting,12.0,0.5,0.002
+ChInv,anomaly long leg,Inventory Growth (low decile; Thomas and Zhang 2002),2002,Accounting,12.0,0.5,0.002
+ChInvIA,anomaly long leg,Change in capital inv (ind adj) (low decile; Abarbanell and Bushee 1998),1998,Accounting,12.0,0.5,0.002
+ChNNCOA,anomaly long leg,Change in Net Noncurrent Op Assets (low decile; Soliman 2008),2008,Accounting,12.0,0.5,0.002
+ChNWC,anomaly long leg,Change in Net Working Capital (low decile; Soliman 2008),2008,Accounting,12.0,0.5,0.002
+ChTax,anomaly long leg,Change in Taxes (high decile; Thomas and Zhang 2011),2011,Accounting,3.0,1.0,0.002
+ChangeInRecommendation,anomaly long leg,Change in recommendation (high decile; Jegadeesh et al. 2004),2004,Analyst,1.0,1.5,0.002
+CompEquIss,anomaly long leg,Composite equity issuance (low decile; Daniel and Titman 2006),2006,Accounting,1.0,1.5,0.002
+CompositeDebtIssuance,anomaly long leg,"Composite debt issuance (low decile; Lyandres, Sun and Zhang 2008)",2008,Accounting,12.0,0.5,0.002
+CoskewACX,anomaly long leg,"Coskewness using daily returns (low decile; Ang, Chen and Xing 2006)",2006,Price,1.0,3.0,0.002
+Coskewness,anomaly long leg,Coskewness (low decile; Harvey and Siddique 2000),2000,Price,1.0,3.0,0.002
+CustomerMomentum,anomaly long leg,Customer momentum (high decile; Cohen and Frazzini 2008),2008,Other,1.0,1.5,0.002
+DelBreadth,anomaly long leg,"Breadth of ownership (high decile; Chen, Hong and Stein 2002)",2002,13F,3.0,1.0,0.002
+DelCOA,anomaly long leg,Change in current operating assets (low decile; Richardson et al. 2005),2005,Accounting,12.0,0.5,0.002
+DelCOL,anomaly long leg,Change in current operating liabilities (low decile; Richardson et al. 2005),2005,Accounting,12.0,0.5,0.002
+DelDRC,anomaly long leg,Deferred Revenue (high decile; Prakash and Sinha 2013),2013,Accounting,1.0,1.5,0.002
+DelEqu,anomaly long leg,Change in equity to assets (low decile; Richardson et al. 2005),2005,Accounting,12.0,0.5,0.002
+DelFINL,anomaly long leg,Change in financial liabilities (low decile; Richardson et al. 2005),2005,Accounting,12.0,0.5,0.002
+DelLTI,anomaly long leg,Change in long-term investment (low decile; Richardson et al. 2005),2005,Accounting,12.0,0.5,0.002
+DelNetFin,anomaly long leg,Change in net financial assets (high decile; Richardson et al. 2005),2005,Accounting,12.0,0.5,0.002
+DolVol,anomaly long leg,"Past trading volume (low decile; Brennan, Chordia, Subra 1998)",1998,Trading,1.0,3.0,0.002
+EBM,anomaly long leg,"Enterprise component of BM (high decile; Penman, Richardson and Tuna 2007)",2007,Accounting,12.0,0.5,0.002
+EP,anomaly long leg,Earnings-to-Price Ratio (high decile; Basu 1977),1977,Accounting,1.0,1.5,0.002
+EarnSupBig,anomaly long leg,Earnings surprise of big firms (high decile; Hou 2007),2007,Accounting,1.0,1.5,0.002
+EarningsConsistency,anomaly long leg,Earnings consistency (high decile; Alwathainani 2009),2009,Accounting,12.0,0.5,0.002
+EarningsForecastDisparity,anomaly long leg,Long-vs-short EPS forecasts (low decile; Da and Warachka 2011),2011,Analyst,1.0,1.5,0.002
+EarningsStreak,anomaly long leg,Earnings surprise streak (high decile; Loh and Warachka 2012),2012,Accounting,1.0,1.5,0.002
+EarningsSurprise,anomaly long leg,"Earnings Surprise (high decile; Foster, Olsen and Shevlin 1984)",1984,Accounting,1.0,1.5,0.002
+EntMult,anomaly long leg,Enterprise Multiple (low decile; Loughran and Wellman 2011),2011,Accounting,12.0,0.5,0.002
+EquityDuration,anomaly long leg,"Equity Duration (low decile; Dechow, Sloan and Soliman 2004)",2004,Accounting,12.0,0.5,0.002
+ExclExp,anomaly long leg,"Excluded Expenses (low decile; Doyle, Lundholm and Soliman 2003)",2003,Analyst,12.0,0.5,0.002
+FEPS,anomaly long leg,"Analyst earnings per share (high decile; Cen, Wei, and Zhang 2006)",2006,Analyst,1.0,1.5,0.002
+FR,anomaly long leg,Pension Funding Status (high decile; Franzoni and Marin 2006),2006,Accounting,12.0,0.5,0.002
+FirmAge,anomaly long leg,Firm age based on CRSP (low decile; Barry and Brown 1984),1984,Other,1.0,1.5,0.002
+FirmAgeMom,anomaly long leg,Firm Age - Momentum (high decile; Zhang 2006),2006,Price,1.0,3.0,0.002
+ForecastDispersion,anomaly long leg,"EPS Forecast Dispersion (low decile; Diether, Malloy and Scherbina 2002)",2002,Analyst,1.0,1.5,0.002
+Frontier,anomaly long leg,Efficient frontier index (high decile; Nguyen and Swanson 2009),2009,Accounting,12.0,0.5,0.002
+GP,anomaly long leg,gross profits / total assets (high decile; Novy-Marx 2013),2013,Accounting,12.0,0.5,0.002
+GrAdExp,anomaly long leg,Growth in advertising expenses (low decile; Lou 2014),2014,Accounting,1.0,1.5,0.002
+GrLTNOA,anomaly long leg,"Growth in long term operating assets (high decile; Fairfield, Whisenant and Yohn 2003)",2003,Accounting,12.0,0.5,0.002
+GrSaleToGrInv,anomaly long leg,Sales growth over inventory growth (high decile; Abarbanell and Bushee 1998),1998,Accounting,12.0,0.5,0.002
+GrSaleToGrOverhead,anomaly long leg,Sales growth over overhead growth (high decile; Abarbanell and Bushee 1998),1998,Accounting,12.0,0.5,0.002
+Herf,anomaly long leg,Industry concentration (sales) (low decile; Hou and Robinson 2006),2006,Other,1.0,1.5,0.002
+HerfAsset,anomaly long leg,Industry concentration (assets) (low decile; Hou and Robinson 2006),2006,Other,1.0,1.5,0.002
+HerfBE,anomaly long leg,Industry concentration (equity) (low decile; Hou and Robinson 2006),2006,Other,1.0,1.5,0.002
+High52,anomaly long leg,52 week high (high decile; George and Hwang 2004),2004,Price,6.0,1.0,0.002
+IND_Aero,industry,Industry: Aero,,Industry,1.0,0.1,0.001
+IND_Agric,industry,Industry: Agric,,Industry,1.0,0.1,0.001
+IND_Autos,industry,Industry: Autos,,Industry,1.0,0.1,0.001
+IND_Banks,industry,Industry: Banks,,Industry,1.0,0.1,0.001
+IND_Beer,industry,Industry: Beer,,Industry,1.0,0.1,0.001
+IND_BldMt,industry,Industry: BldMt,,Industry,1.0,0.1,0.001
+IND_Books,industry,Industry: Books,,Industry,1.0,0.1,0.001
+IND_Boxes,industry,Industry: Boxes,,Industry,1.0,0.1,0.001
+IND_BusSv,industry,Industry: BusSv,,Industry,1.0,0.1,0.001
+IND_Chems,industry,Industry: Chems,,Industry,1.0,0.1,0.001
+IND_Chips,industry,Industry: Chips,,Industry,1.0,0.1,0.001
+IND_Clths,industry,Industry: Clths,,Industry,1.0,0.1,0.001
+IND_Cnstr,industry,Industry: Cnstr,,Industry,1.0,0.1,0.001
+IND_Coal,industry,Industry: Coal,,Industry,1.0,0.1,0.001
+IND_Drugs,industry,Industry: Drugs,,Industry,1.0,0.1,0.001
+IND_ElcEq,industry,Industry: ElcEq,,Industry,1.0,0.1,0.001
+IND_FabPr,industry,Industry: FabPr,,Industry,1.0,0.1,0.001
+IND_Fin,industry,Industry: Fin,,Industry,1.0,0.1,0.001
+IND_Food,industry,Industry: Food,,Industry,1.0,0.1,0.001
+IND_Fun,industry,Industry: Fun,,Industry,1.0,0.1,0.001
+IND_Gold,industry,Industry: Gold,,Industry,1.0,0.1,0.001
+IND_Guns,industry,Industry: Guns,,Industry,1.0,0.1,0.001
+IND_Hardw,industry,Industry: Hardw,,Industry,1.0,0.1,0.001
+IND_Hlth,industry,Industry: Hlth,,Industry,1.0,0.1,0.001
+IND_Hshld,industry,Industry: Hshld,,Industry,1.0,0.1,0.001
+IND_Insur,industry,Industry: Insur,,Industry,1.0,0.1,0.001
+IND_LabEq,industry,Industry: LabEq,,Industry,1.0,0.1,0.001
+IND_Mach,industry,Industry: Mach,,Industry,1.0,0.1,0.001
+IND_Meals,industry,Industry: Meals,,Industry,1.0,0.1,0.001
+IND_MedEq,industry,Industry: MedEq,,Industry,1.0,0.1,0.001
+IND_Mines,industry,Industry: Mines,,Industry,1.0,0.1,0.001
+IND_Oil,industry,Industry: Oil,,Industry,1.0,0.1,0.001
+IND_Other,industry,Industry: Other,,Industry,1.0,0.1,0.001
+IND_Paper,industry,Industry: Paper,,Industry,1.0,0.1,0.001
+IND_PerSv,industry,Industry: PerSv,,Industry,1.0,0.1,0.001
+IND_RlEst,industry,Industry: RlEst,,Industry,1.0,0.1,0.001
+IND_Rtail,industry,Industry: Rtail,,Industry,1.0,0.1,0.001
+IND_Rubbr,industry,Industry: Rubbr,,Industry,1.0,0.1,0.001
+IND_Ships,industry,Industry: Ships,,Industry,1.0,0.1,0.001
+IND_Smoke,industry,Industry: Smoke,,Industry,1.0,0.1,0.001
+IND_Soda,industry,Industry: Soda,,Industry,1.0,0.1,0.001
+IND_Softw,industry,Industry: Softw,,Industry,1.0,0.1,0.001
+IND_Steel,industry,Industry: Steel,,Industry,1.0,0.1,0.001
+IND_Telcm,industry,Industry: Telcm,,Industry,1.0,0.1,0.001
+IND_Toys,industry,Industry: Toys,,Industry,1.0,0.1,0.001
+IND_Trans,industry,Industry: Trans,,Industry,1.0,0.1,0.001
+IND_Txtls,industry,Industry: Txtls,,Industry,1.0,0.1,0.001
+IND_Util,industry,Industry: Util,,Industry,1.0,0.1,0.001
+IND_Whlsl,industry,Industry: Whlsl,,Industry,1.0,0.1,0.001
+IO_ShortInterest,anomaly long leg,Inst own among high short interest (high decile; Asquith Pathak and Ritter 2005),2005,13F,1.0,1.5,0.002
+IdioVol3F,anomaly long leg,Idiosyncratic risk (3 factor) (low decile; Ang et al. 2006),2006,Price,1.0,3.0,0.002
+IdioVolAHT,anomaly long leg,"Idiosyncratic risk (AHT) (low decile; Ali, Hwang, and Trombley 2003)",2003,Price,36.0,0.5,0.002
+Illiquidity,anomaly long leg,Amihud's illiquidity (high decile; Amihud 2002),2002,Trading,12.0,0.5,0.002
+IndMom,anomaly long leg,Industry Momentum (high decile; Grinblatt and Moskowitz 1999),1999,Price,6.0,1.0,0.002
+IndRetBig,anomaly long leg,Industry return of big firms (high decile; Hou 2007),2007,Price,1.0,3.0,0.002
+IntMom,anomaly long leg,Intermediate Momentum (high decile; Novy-Marx 2012),2012,Price,1.0,3.0,0.002
+IntanBM,anomaly long leg,Intangible return using BM (low decile; Daniel and Titman 2006),2006,Accounting,1.0,1.5,0.002
+IntanCFP,anomaly long leg,Intangible return using CFtoP (low decile; Daniel and Titman 2006),2006,Accounting,1.0,1.5,0.002
+IntanEP,anomaly long leg,Intangible return using EP (low decile; Daniel and Titman 2006),2006,Accounting,12.0,0.5,0.002
+IntanSP,anomaly long leg,Intangible return using Sale2P (low decile; Daniel and Titman 2006),2006,Accounting,12.0,0.5,0.002
+InvGrowth,anomaly long leg,Inventory Growth (low decile; Belo and Lin 2012),2012,Accounting,12.0,0.5,0.002
+InvestPPEInv,anomaly long leg,"change in ppe and inv/assets (low decile; Lyandres, Sun and Zhang 2008)",2008,Accounting,1.0,1.5,0.002
+Investment,anomaly long leg,"Investment to revenue (low decile; Titman, Wei and Xie 2004)",2004,Accounting,12.0,0.5,0.002
+LRreversal,anomaly long leg,Long-run reversal (low decile; De Bondt and Thaler 1985),1985,Price,1.0,3.0,0.002
+Leverage,anomaly long leg,Market leverage (high decile; Bhandari 1988),1988,Accounting,12.0,0.5,0.002
+MRreversal,anomaly long leg,Medium-run reversal (low decile; De Bondt and Thaler 1985),1985,Price,12.0,0.5,0.002
+MaxRet,anomaly long leg,"Maximum return over month (low decile; Bali, Cakici, and Whitelaw 2011)",2011,Price,1.0,3.0,0.002
+MeanRankRevGrowth,anomaly long leg,"Revenue Growth Rank (high decile; Lakonishok, Shleifer, Vishny 1994)",1994,Accounting,12.0,0.5,0.002
+Mom12m,anomaly long leg,Momentum (12 month) (high decile; Jegadeesh and Titman 1993),1993,Price,3.0,1.0,0.002
+Mom12mOffSeason,anomaly long leg,Momentum without the seasonal part (high decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+Mom6m,anomaly long leg,Momentum (6 month) (high decile; Jegadeesh and Titman 1993),1993,Price,3.0,1.0,0.002
+Mom6mJunk,anomaly long leg,Junk Stock Momentum (high decile; Avramov et al 2007),2007,Price,1.0,3.0,0.002
+MomOffSeason,anomaly long leg,Off season long-term reversal (low decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+MomOffSeason06YrPlus,anomaly long leg,Off season reversal years 6 to 10 (low decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+MomOffSeason11YrPlus,anomaly long leg,Off season reversal years 11 to 15 (low decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+MomOffSeason16YrPlus,anomaly long leg,Off season reversal years 16 to 20 (low decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+MomSeason,anomaly long leg,Return seasonality years 2 to 5 (high decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+MomSeason06YrPlus,anomaly long leg,Return seasonality years 6 to 10 (high decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+MomSeason11YrPlus,anomaly long leg,Return seasonality years 11 to 15 (high decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+MomSeason16YrPlus,anomaly long leg,Return seasonality years 16 to 20 (high decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+MomSeasonShort,anomaly long leg,Return seasonality last year (high decile; Heston and Sadka 2008),2008,Price,1.0,3.0,0.002
+NOA,anomaly long leg,Net Operating Assets (low decile; Hirshleifer et al. 2004),2004,Accounting,1.0,1.5,0.002
+NetDebtFinance,anomaly long leg,"Net debt financing (low decile; Bradshaw, Richardson, Sloan 2006)",2006,Accounting,12.0,0.5,0.002
+NetDebtPrice,anomaly long leg,"Net debt to price (low decile; Penman, Richardson and Tuna 2007)",2007,Accounting,12.0,0.5,0.002
+NetEquityFinance,anomaly long leg,"Net equity financing (low decile; Bradshaw, Richardson, Sloan 2006)",2006,Accounting,12.0,0.5,0.002
+NetPayoutYield,anomaly long leg,Net Payout Yield (high decile; Boudoukh et al. 2007),2007,Accounting,12.0,0.5,0.002
+NumEarnIncrease,anomaly long leg,Earnings streak length (high decile; Loh and Warachka 2012),2012,Accounting,1.0,1.5,0.002
+OPLeverage,anomaly long leg,Operating leverage (high decile; Novy-Marx 2011),2011,Accounting,12.0,0.5,0.002
+OperProf,anomaly long leg,operating profits / book equity (high decile; Fama and French 2006),2006,Accounting,12.0,0.5,0.002
+OperProfRD,anomaly long leg,Operating profitability R&D adjusted (high decile; Ball et al. 2016),2016,Accounting,12.0,0.5,0.002
+OptionVolume1,anomaly long leg,Option to stock volume (low decile; Johnson and So 2012),2012,Options,1.0,1.5,0.002
+OptionVolume2,anomaly long leg,Option volume to average (low decile; Johnson and So 2012),2012,Options,1.0,1.5,0.002
+OrderBacklog,anomaly long leg,"Order backlog (low decile; Rajgopal, Shevlin, Venkatachalam 2003)",2003,Accounting,12.0,0.5,0.002
+OrderBacklogChg,anomaly long leg,Change in order backlog (high decile; Baik and Ahn 2007),2007,Accounting,12.0,0.5,0.002
+OrgCap,anomaly long leg,Organizational capital (high decile; Eisfeldt and Papanikolaou 2013),2013,Accounting,12.0,0.5,0.002
+PS,anomaly long leg,Piotroski F-score (high decile; Piotroski 2000),2000,Accounting,1.0,1.5,0.002
+PayoutYield,anomaly long leg,Payout Yield (high decile; Boudoukh et al. 2007),2007,Accounting,12.0,0.5,0.002
+PctAcc,anomaly long leg,"Percent Operating Accruals (low decile; Hafzalla, Lundholm, Van Winkle 2011)",2011,Accounting,12.0,0.5,0.002
+PctTotAcc,anomaly long leg,"Percent Total Accruals (low decile; Hafzalla, Lundholm, Van Winkle 2011)",2011,Accounting,12.0,0.5,0.002
+PredictedFE,anomaly long leg,Predicted Analyst forecast error (low decile; Frankel and Lee 1998),1998,Accounting,12.0,0.5,0.002
+Price,anomaly long leg,Price (low decile; Blume and Husic 1973),1973,Price,1.0,3.0,0.002
+PriceDelayRsq,anomaly long leg,Price delay r square (high decile; Hou and Moskowitz 2005),2005,Price,12.0,0.5,0.002
+PriceDelaySlope,anomaly long leg,Price delay coeff (high decile; Hou and Moskowitz 2005),2005,Price,12.0,0.5,0.002
+PriceDelayTstat,anomaly long leg,Price delay SE adjusted (high decile; Hou and Moskowitz 2005),2005,Price,12.0,0.5,0.002
+ProbInformedTrading,anomaly long leg,"Probability of Informed Trading (high decile; Easley, Hvidkjaer and O'Hara 2002)",2002,Trading,1.0,3.0,0.002
+RD,anomaly long leg,"R&D over market cap (high decile; Chan, Lakonishok and Sougiannis 2001)",2001,Accounting,12.0,0.5,0.002
+RDAbility,anomaly long leg,"R&D ability (high decile; Cohen, Diether and Malloy 2013)",2013,Accounting,1.0,1.5,0.002
+RDS,anomaly long leg,Real dirty surplus (high decile; Landsman et al. 2011),2011,Accounting,12.0,0.5,0.002
+RDcap,anomaly long leg,R&D capital-to-assets (high decile; Li 2011),2011,Accounting,12.0,0.5,0.002
+REV6,anomaly long leg,"Earnings forecast revisions (high decile; Chan, Jegadeesh and Lakonishok 1996)",1996,Analyst,1.0,1.5,0.002
+RIVolSpread,anomaly long leg,Realized minus Implied Vol (low decile; Bali and Hovakimian 2009),2009,Options,1.0,1.5,0.002
+RealizedVol,anomaly long leg,Realized (Total) Volatility (low decile; Ang et al. 2006),2006,Price,1.0,3.0,0.002
+ResidualMomentum,anomaly long leg,"Momentum based on FF3 residuals (high decile; Blitz, Huij and Martens 2011)",2011,Price,1.0,3.0,0.002
+ReturnSkew,anomaly long leg,"Return skewness (low decile; Bali, Engle and Murray 2015)",2015,Price,1.0,3.0,0.002
+ReturnSkew3F,anomaly long leg,"Idiosyncratic skewness (3F model) (low decile; Bali, Engle and Murray 2015)",2015,Price,1.0,3.0,0.002
+RevenueSurprise,anomaly long leg,Revenue Surprise (high decile; Jegadeesh and Livnat 2006),2006,Accounting,1.0,1.5,0.002
+RoE,anomaly long leg,net income / book equity (high decile; Haugen and Baker 1996),1996,Accounting,12.0,0.5,0.002
+SP,anomaly long leg,"Sales-to-price (high decile; Barbee, Mukherji and Raines 1996)",1996,Accounting,12.0,0.5,0.002
+STreversal,anomaly long leg,Short term reversal (low decile; Jegadeesh 1990),1990,Price,1.0,3.0,0.002
+ShareIss1Y,anomaly long leg,Share issuance (1 year) (low decile; Pontiff and Woodgate 2008),2008,Accounting,12.0,0.5,0.002
+ShareIss5Y,anomaly long leg,Share issuance (5 year) (low decile; Daniel and Titman 2006),2006,Accounting,12.0,0.5,0.002
+ShortInterest,anomaly long leg,Short Interest (low decile; Dechow et al. 2001),2001,Trading,1.0,3.0,0.002
+Size,anomaly long leg,Size (low decile; Banz 1981),1981,Price,12.0,0.5,0.002
+SmileSlope,anomaly long leg,Put volatility minus call volatility (low decile; Yan 2011),2011,Options,1.0,1.5,0.002
+Tax,anomaly long leg,Taxable income to income (high decile; Lev and Nissim 2004),2004,Accounting,12.0,0.5,0.002
+TotalAccruals,anomaly long leg,Total accruals (low decile; Richardson et al. 2005),2005,Accounting,12.0,0.5,0.002
+TrendFactor,anomaly long leg,"Trend Factor (high decile; Han, Zhou, Zhu 2016)",2016,Price,1.0,3.0,0.002
+VarCF,anomaly long leg,Cash-flow  to price variance (low decile; Haugen and Baker 1996),1996,Accounting,12.0,0.5,0.002
+VolMkt,anomaly long leg,Volume to market equity (low decile; Haugen and Baker 1996),1996,Trading,12.0,0.5,0.002
+VolSD,anomaly long leg,"Volume Variance (low decile; Chordia, Subra, Anshuman 2001)",2001,Trading,1.0,3.0,0.002
+VolumeTrend,anomaly long leg,Volume Trend (low decile; Haugen and Baker 1996),1996,Trading,12.0,0.5,0.002
+XFIN,anomaly long leg,"Net external financing (low decile; Bradshaw, Richardson, Sloan 2006)",2006,Accounting,12.0,0.5,0.002
+betaVIX,anomaly long leg,Systematic volatility (low decile; Ang et al. 2006),2006,Price,1.0,3.0,0.002
+cfp,anomaly long leg,"Operating Cash flows to price (high decile; Desai, Rajgopal, Venkatachalam 2004)",2004,Accounting,12.0,0.5,0.002
+dCPVolSpread,anomaly long leg,"Change in put vol minus change in call vol (low decile; An, Ang, Bali, Cakici 2014)",2014,Options,1.0,1.5,0.002
+dNoa,anomaly long leg,"change in net operating assets (low decile; Hirshleifer, Hou, Teoh, Zhang 2004)",2004,Accounting,1.0,1.5,0.002
+dVolCall,anomaly long leg,"Change in call vol (high decile; An, Ang, Bali, Cakici 2014)",2014,Options,1.0,1.5,0.002
+dVolPut,anomaly long leg,"Change in put vol (low decile; An, Ang, Bali, Cakici 2014)",2014,Options,1.0,1.5,0.002
+fgr5yrLag,anomaly long leg,Long-term EPS forecast (low decile; La Porta 1996),1996,Analyst,3.0,1.0,0.002
+grcapx,anomaly long leg,Change in capex (two years) (low decile; Anderson and Garcia-Feijoo 2006),2006,Accounting,12.0,0.5,0.002
+grcapx3y,anomaly long leg,Change in capex (three years) (low decile; Anderson and Garcia-Feijoo 2006),2006,Accounting,12.0,0.5,0.002
+hire,anomaly long leg,"Employment growth (low decile; Bazdresch, Belo and Lin 2014)",2014,Other,12.0,0.5,0.002
+iomom_cust,anomaly long leg,Customers momentum (high decile; Menzly and Ozbas 2010),2010,Other,1.0,1.5,0.002
+iomom_supp,anomaly long leg,Suppliers momentum (high decile; Menzly and Ozbas 2010),2010,Other,1.0,1.5,0.002
+realestate,anomaly long leg,Real estate holdings (high decile; Tuzel 2010),2010,Accounting,12.0,0.5,0.002
+retConglomerate,anomaly long leg,Conglomerate return (high decile; Cohen and Lou 2012),2012,Price,1.0,3.0,0.002
+roaq,anomaly long leg,"Return on assets (qtrly) (high decile; Balakrishnan, Bartov and Faurel 2010)",2010,Accounting,1.0,1.5,0.002
+sfe,anomaly long leg,"Earnings Forecast to price (high decile; Elgers, Lo and Pfeiffer 2001)",2001,Analyst,12.0,0.5,0.002
+skew1,anomaly long leg,"Volatility smirk near the money (low decile; Xing, Zhang and Zhao 2010)",2010,Options,1.0,1.5,0.002
+std_turn,anomaly long leg,"Share turnover volatility (low decile; Chordia, Subra, Anshuman 2001)",2001,Trading,1.0,3.0,0.002
+tang,anomaly long leg,Tangibility (high decile; Hahn and Lee 2009),2009,Accounting,1.0,1.5,0.002
+zerotrade12M,anomaly long leg,Days with zero trades (high decile; Liu 2006),2006,Trading,1.0,3.0,0.002
+zerotrade1M,anomaly long leg,Days with zero trades (high decile; Liu 2006),2006,Trading,12.0,0.5,0.002
+zerotrade6M,anomaly long leg,Days with zero trades (high decile; Liu 2006),2006,Trading,1.0,3.0,0.002

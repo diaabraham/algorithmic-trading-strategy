@@ -43,13 +43,10 @@ def cz_portfolios():
     return _cache("cz_deciles_vw", fetch)
 
 
-def load(end: str) -> dict:
-    """Wide matrices of long legs, long-shorts, industries, market, T-bill and macro, cut at ``end``."""
-    e = pd.Timestamp(end) + pd.offsets.MonthEnd(0)
-    port, doc = cz_portfolios()
+def long_legs(port: pd.DataFrame, doc: pd.DataFrame):
+    """Long-direction legs, signed long-shorts, Nlong and metadata from CZ deciles and SignalDoc."""
     port = port.copy()
     port["date"] = _month_end(port["date"])
-    port = port[port["date"] <= e]
     doc = doc.drop_duplicates("Acronym").set_index("Acronym")
     names = sorted(set(port["signalname"]) & set(doc.index))
     meta = doc.loc[names, ["Year", "Sign", "Cat.Data", "Portfolio Period"]].copy()
@@ -64,13 +61,22 @@ def load(end: str) -> dict:
             ls[s] = float(np.sign(meta.at[s, "Sign"])) * wide[(s, "LS")]
             nlong[s] = nl[(s, leg)] if (s, leg) in nl.columns else np.nan
     long_leg, ls = pd.DataFrame(long_leg), pd.DataFrame(ls)
+    return long_leg, ls, pd.DataFrame(nlong), meta.loc[long_leg.columns]
+
+
+def load(end: str) -> dict:
+    """Wide matrices of long legs, long-shorts, industries, market, T-bill and macro, cut at ``end``."""
+    e = pd.Timestamp(end) + pd.offsets.MonthEnd(0)
+    port, doc = cz_portfolios()
+    port = port[_month_end(port["date"]) <= e]
+    long_leg, ls, nlong, meta = long_legs(port, doc)
     ind = parse_monthly(french_download("49_Industry_Portfolios"), "Average Value Weighted Returns -- Monthly")
     ind.columns = ["IND_" + c.strip() for c in ind.columns]
     ff = parse_monthly(french_download("F-F_Research_Data_Factors"))
     out = {
-        "long_leg": long_leg, "ls": ls, "industries": ind.loc[:e], "nlong": pd.DataFrame(nlong),
+        "long_leg": long_leg, "ls": ls, "industries": ind.loc[:e], "nlong": nlong,
         "market": (ff["Mkt-RF"] + ff["RF"]).loc[:e], "rf": ff["RF"].loc[:e],
-        "meta": meta.loc[long_leg.columns], "macro": macro(e),
+        "meta": meta, "macro": macro(e),
     }
     return out
 
