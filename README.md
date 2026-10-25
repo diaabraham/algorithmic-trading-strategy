@@ -130,6 +130,67 @@ affect the selection.
 
 ![Study 2 out-of-sample](results/study2_oos_equity.png)
 
+## Study 3: walk-forward machine learning (pre-registered, failed)
+
+Protocol: [`results/study3_protocol.md`](results/study3_protocol.md) (commit
+`7a5b06c`). Frozen config: [`results/frozen_config.md`](results/frozen_config.md)
+(commit `d1fd68b`). The holdout was run once after the freeze.
+
+```bash
+python scripts/run_ml_study.py --phase dev       # SPY, data cut at 2023-12-31
+python scripts/run_ml_study.py --phase holdout   # frozen config, run once
+```
+
+**Method**
+* **Recursive learning.** Expanding-window walk-forward with monthly refits.
+  Hyper-parameters are re-chosen once a year by purged, embargoed 5-fold CV
+  inside each training window.
+* **Models.** Ridge, LightGBM, an MLP and their ensemble, predicting the next
+  21-day excess return.
+* **Features.** 24 point-in-time features: multi-horizon momentum,
+  volatility, drawdown, VIX, T-bill, FRED term and credit spreads, jobless
+  claims (with publication lags), and sector breadth.
+* **Sizing.** Three rules (mean-variance, vol-target tilt, vol-target gate)
+  with a 1.5x cap, plus a no-ML vol-target reference. That makes 13 configs,
+  all in [`results/trials_log.csv`](results/trials_log.csv).
+* **Execution.** Next-open fills, 2-5 bp costs, financing at T-bill + 50 bp.
+
+**Hardware.** The models are small and the data is about 6,000 daily rows, so
+all training ran on CPU. On an AMD RX 9070 (PyTorch DirectML, Windows), the
+GPU was slower than CPU for the small networks used here. It was faster only
+for networks of 1,024 units and wider. LSTM layers are not supported by
+DirectML, and the LightGBM Windows wheel has no GPU build.
+
+**Development (SPY 2000-2023; 2020-2023 had already been seen in studies 1 and 2)**
+* Every ML config earned less than the no-ML vol-target reference. That
+  reference was selected by the registered rule (highest development CAGR):
+  8.44% vs SPY's 6.92%, Sharpe 0.45 vs 0.35, max drawdown -44.5% vs -55.2%.
+* Its deflated Sharpe ratio (active return, N = 45 trials across all three
+  studies) is 0.29, far below the 0.95 bar.
+
+**Holdouts (run once, net of costs)**
+
+| Holdout | Period | CAGR | B&H CAGR | Sharpe | B&H Sharpe | Max DD | B&H Max DD | Beats B&H? |
+|---|---|---:|---:|---:|---:|---:|---:|:---:|
+| SPY 2024+ | 2024-01-02 to 2026-10-23 | 19.75% | 19.89% | 0.83 | 0.98 | -23.4% | -18.8% | No |
+| EFA | 2007-01-03 to 2026-10-23 | 3.69% | 4.71% | 0.21 | 0.25 | -46.5% | -61.0% | No |
+| EWJ | 2001-08-01 to 2026-10-23 | 4.27% | 5.11% | 0.22 | 0.26 | -55.5% | -54.5% | No |
+| EWG | 2001-08-01 to 2026-10-23 | 3.57% | 5.90% | 0.20 | 0.29 | -65.9% | -63.1% | No |
+| EWU | 2001-08-01 to 2026-10-23 | 4.98% | 5.48% | 0.25 | 0.27 | -56.6% | -64.0% | No |
+| EWC | 2001-08-01 to 2026-10-23 | 8.22% | 8.84% | 0.38 | 0.42 | -57.5% | -60.8% | No |
+| S&P 500 TR, pre-2000 | 1996-01-02 to 1999-12-31 | 20.36% | 26.06% | 1.02 | 1.14 | -17.0% | -19.2% | No |
+
+**Verdict: FAIL.** Criteria 1 (development CAGR) and 5 (rolling 3-year win
+rate 73%) passed. Criteria 2 (SPY 2024+), 3 (0 of 6 cross-market holdouts) and
+4 (deflated Sharpe) failed.
+
+* The development edge was specific to SPY 2000-2023 and did not carry over to
+  new data or other markets.
+* Machine learning on these features added no value over simple volatility
+  targeting.
+* The results are in `results/study3_dev.json` and
+  `results/study3_holdout.json`.
+
 ## How the strategy works
 
 1. **Volatility regime.** 20-day realised volatility, ranked over the last 252
@@ -212,6 +273,7 @@ algorithmic-trading-strategy/
 ├── scripts/
 │   ├── run_oos_study.py    # Study 1
 │   ├── run_preregistered_study.py  # Study 2 (pre-registered)
+│   ├── run_ml_study.py     # Study 3 (walk-forward ML)
 │   └── verify_real_market.py
 ├── src/
 │   ├── strategy.py         # Volatility regime strategy
@@ -219,6 +281,7 @@ algorithmic-trading-strategy/
 │   ├── oos_study.py        # Study 1: candidates, selection rule and evaluation
 │   ├── portfolio_backtest.py # Multi-asset next-open simulator, stats, deflated Sharpe
 │   ├── candidates.py       # Study 2 pre-registered candidates
+│   ├── ml_research/        # Study 3 walk-forward ML pipeline
 │   ├── data_loader.py      # Data providers and features
 │   ├── ml_signal.py        # Walk-forward RandomForest
 │   ├── black_scholes.py    # Realised-vol cone and N(d2)
