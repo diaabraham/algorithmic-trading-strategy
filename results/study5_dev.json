@@ -1,0 +1,124 @@
+{
+  "protocol": "results/study5_protocol.md",
+  "period": [
+    "1975-01",
+    "2014-12"
+  ],
+  "candidates": {
+    "L0_momentum_top10": {
+      "start": "1975-01",
+      "end": "2014-12",
+      "months": 480,
+      "cagr": 0.16750029767229768,
+      "sharpe": 0.5989926565862603,
+      "ann_vol": 0.21928979667960108,
+      "max_drawdown": -0.5770392028525055,
+      "cagr_2x_costs": 0.15114559438392883,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.3686149490648337,
+        "months": 480,
+        "psr_vs_zero": 0.9946762481967861,
+        "trials": 55,
+        "null_max_sharpe_annual": 0.27289374624150087,
+        "deflated_sharpe_ratio": 0.7464093792145524
+      },
+      "avg_switch_turnover_per_month": 0.29208333333333336,
+      "avg_industries_held": 4.652083333333334,
+      "avg_nlong_of_signal_legs": 250.65173354109857
+    },
+    "L1_lgbm_top10": {
+      "start": "1975-01",
+      "end": "2014-12",
+      "months": 480,
+      "cagr": 0.15063061020382795,
+      "sharpe": 0.5493532169669157,
+      "ann_vol": 0.20839458716574963,
+      "max_drawdown": -0.6511848414406782,
+      "cagr_2x_costs": 0.12710140656415114,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.2944485620326558,
+        "months": 480,
+        "psr_vs_zero": 0.9759490275940225,
+        "trials": 55,
+        "null_max_sharpe_annual": 0.27289374624150087,
+        "deflated_sharpe_ratio": 0.5575203228612916
+      },
+      "avg_switch_turnover_per_month": 0.5885416666666666,
+      "avg_industries_held": 6.777083333333334,
+      "avg_nlong_of_signal_legs": 359.8235294117647
+    },
+    "L2_mlp_top10": {
+      "start": "1975-01",
+      "end": "2014-12",
+      "months": 480,
+      "cagr": 0.1411666617649745,
+      "sharpe": 0.5042882157195574,
+      "ann_vol": 0.21199081826133406,
+      "max_drawdown": -0.684584400151689,
+      "cagr_2x_costs": 0.11913044478958335,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.21814815525160386,
+        "months": 480,
+        "psr_vs_zero": 0.9226262912085338,
+        "trials": 55,
+        "null_max_sharpe_annual": 0.27289374624150087,
+        "deflated_sharpe_ratio": 0.3605082270403971
+      },
+      "avg_switch_turnover_per_month": 0.534375,
+      "avg_industries_held": 6.55,
+      "avg_nlong_of_signal_legs": 358.6038647342995
+    },
+    "L3_ensemble_top10": {
+      "start": "1975-01",
+      "end": "2014-12",
+      "months": 480,
+      "cagr": 0.15982918639678445,
+      "sharpe": 0.590024286199553,
+      "ann_vol": 0.20709470444604763,
+      "max_drawdown": -0.652769752638565,
+      "cagr_2x_costs": 0.1372082672240127,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.3608149199300933,
+        "months": 480,
+        "psr_vs_zero": 0.9931201183470485,
+        "trials": 55,
+        "null_max_sharpe_annual": 0.27289374624150087,
+        "deflated_sharpe_ratio": 0.7258416552990641
+      },
+      "avg_switch_turnover_per_month": 0.5545833333333334,
+      "avg_industries_held": 6.7375,
+      "avg_nlong_of_signal_legs": 351.411877394636
+    },
+    "O1_market_plus_ls_overlay": {
+      "start": "1986-02",
+      "end": "2014-12",
+      "months": 347,
+      "cagr": 0.10861110491294945,
+      "sharpe": 0.4885254664822874,
+      "ann_vol": 0.17123149024684808,
+      "max_drawdown": -0.4915943081955698,
+      "cagr_2x_costs": 0.07205460407949915,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.08411222170763191,
+        "months": 347,
+        "psr_vs_zero": 0.6753618758134344,
+        "trials": 55,
+        "null_max_sharpe_annual": 0.27289374624150087,
+        "deflated_sharpe_ratio": 0.153702729027537
+      },
+      "avg_k": 0.5837043810891536,
+      "max_k": 1.0
+    }
+  },
+  "market": {
+    "start": "1975-01",
+    "end": "2014-12",
+    "months": 480,
+    "cagr": 0.1254244107779643,
+    "sharpe": 0.5305585895431109,
+    "ann_vol": 0.1553465235461372,
+    "max_drawdown": -0.5031170717166412
+  },
+  "selected": "L0_momentum_top10",
+  "criterion_4a_dsr_ge_0.95": false
+}
