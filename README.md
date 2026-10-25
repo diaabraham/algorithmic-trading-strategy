@@ -5,7 +5,7 @@ next-open execution, transaction costs, walk-forward machine learning, Brinson
 attribution and an in-sample / out-of-sample (IS/OOS) study against SPY
 buy-and-hold.
 
-## Results (honest summary)
+## Study 1: volatility-regime grid (honest summary)
 
 The study (`python scripts/run_oos_study.py`) uses SPY daily bars (Yahoo
 Finance, split- and dividend-adjusted) and a protocol that was fixed before
@@ -50,6 +50,85 @@ What this does and does not show:
 ![Out-of-sample growth of $1](results/oos_equity_curve.png)
 
 Full in-sample and out-of-sample statistics are in `results/oos_study.json`.
+
+## Study 2: pre-registered search for a strategy that beats SPY
+
+The candidates, costs, selection rule and OOS shortlist were committed in
+[`results/candidates.md`](results/candidates.md) (commit `2288ba9`). The
+in-sample selection was committed next (`c287f01`, data cut at 2019-12-31).
+Only after that was the OOS period run, once.
+
+```bash
+python scripts/run_preregistered_study.py --phase is
+python scripts/run_preregistered_study.py --phase oos
+```
+
+**Setup**
+* Universe: liquid ETFs that all existed before 2007 (SPY, QQQ, IWM, EFA,
+  EEM, TLT, IEF, GLD, DBC, and the nine SPDR sectors).
+* Execution: next-open fills. Costs are 2-5 bp per side. Borrowed cash pays
+  T-bill + 50 bp, and idle cash earns T-bills.
+* In-sample (IS): 2007-01-03 to 2019-12-31. Out-of-sample (OOS): 2020-01-02 to
+  2026-10-23.
+
+**In-sample (all 14 candidates, in `results/study2_is_selection.json`)**
+* SPY buy-and-hold: CAGR 8.69%, Sharpe 0.48, max drawdown -55.2%.
+* The highest IS Sharpe was **B1**: hold SPY above its 10-month SMA, IEF below
+  it (CAGR 10.36%, Sharpe 0.76, max drawdown -21.1%). B1 was selected.
+* Its vol-matched version (k = 1.49, fixed from IS) had IS CAGR 14.05% vs
+  SPY's 8.69%.
+* The Deflated Sharpe Ratio of B1 with 14 trials was 0.97. The Sharpe expected
+  from the best of 14 skill-less trials is 0.24.
+* The walk-forward re-selection inside IS (2010-2019) earned 7.8%/yr against
+  SPY's 13.5%. It beat SPY in only 3 of 10 years, an early warning that the
+  selection was fragile.
+
+**Out-of-sample, evaluated once (net of costs and financing)**
+
+| Strategy | CAGR | Sharpe | Vol | Max DD | Gross leverage avg / max | Costs/yr | Beats SPY CAGR? |
+|---|---:|---:|---:|---:|---:|---:|:---:|
+| **B1 SMA filter (selected)** | 9.15% | 0.50 | 13.7% | -30.4% | 1.00 / 1.00 | 0.09% | No |
+| B1 vol-matched to SPY's IS vol (ex ante, k = 1.49) | 11.03% | 0.49 | 19.5% | -42.0% | 1.42 / 1.57 | 0.13% | No |
+| B2 SMA filter, 15% vol target | 7.93% | 0.38 | 15.7% | -31.4% | 1.18 / 1.58 | 0.12% | No |
+| C1 multi-asset trend, 15% vol target | 9.89% | 0.48 | 16.6% | -28.8% | 1.37 / 2.18 | 0.17% | No |
+| D3 sector momentum + SPY filter | 10.39% | 0.55 | 14.6% | -24.9% | 1.00 / 1.00 | 0.22% | No |
+| A1 vol-managed SPY (21-day) | 12.96% | 0.63 | 17.3% | -27.6% | 1.06 / 1.56 | 0.07% | No |
+| E2 repo strategy + ML, vol-scaled | 12.88% | 0.71 | 14.5% | -14.4% | 0.90 / 1.54 | 0.12% | No |
+| **SPY buy-and-hold** | **14.99%** | 0.66 | 20.0% | -33.7% | 1.00 / 1.00 | 0.00% | - |
+
+Ex-post leverage-matched comparison (hypothetical: excess returns scaled so
+OOS volatility equals SPY's, extra borrowing at T-bill + 50 bp):
+
+| Strategy | k | CAGR | Sharpe | Max DD |
+|---|---:|---:|---:|---:|
+| B1 | 1.46 | 11.19% | 0.49 | -42.6% |
+| C1 | 1.20 | 10.61% | 0.46 | -34.9% |
+| D3 | 1.37 | 12.45% | 0.55 | -33.6% |
+| A1 | 1.16 | 14.13% | 0.62 | -31.3% |
+| E2 | 1.37 | 15.98% | 0.70 | -20.3% |
+
+**Conclusion.** No pre-registered strategy beat SPY buy-and-hold on raw
+return out of sample, including the selected one and its leveraged version.
+
+* A likely explanation, not tested here: the 2007-2019 in-sample period
+  contains 2008, when trend filters shine. The 2020-2026 period was dominated
+  by fast V-shaped recoveries (2020, 2025), when they sell low and buy back
+  higher.
+* The only number above SPY's return is E2 leverage-matched after the fact
+  (15.98%). That uses OOS volatility to choose the leverage, and E2 had the
+  worst IS Sharpe of the 14 candidates. It is not a tradeable result and was
+  not selected.
+* What the data does support: several strategies had smaller drawdowns than
+  SPY, and E2 and A1 had similar or higher Sharpe ratios. None converted that
+  into a higher return after costs.
+
+Small data note: the OOS phase recomputes the IS statistics from the full
+download. They match exactly for 13 of 14 candidates. E2 differs by 0.5%/yr of
+IS CAGR because Yahoo's dividend adjustment differs at the 1e-6 level between
+the two download windows, which flips some RandomForest splits. This does not
+affect the selection.
+
+![Study 2 out-of-sample](results/study2_oos_equity.png)
 
 ## How the strategy works
 
@@ -131,12 +210,15 @@ blocked if the backtest has Sharpe <= 0, CAGR <= 0 or a win rate below 45%.
 algorithmic-trading-strategy/
 ├── main.py                 # Command-line backtest, rigorous suite, Monte Carlo, live routing
 ├── scripts/
-│   ├── run_oos_study.py    # IS/OOS study against SPY buy-and-hold
+│   ├── run_oos_study.py    # Study 1
+│   ├── run_preregistered_study.py  # Study 2 (pre-registered)
 │   └── verify_real_market.py
 ├── src/
 │   ├── strategy.py         # Volatility regime strategy
 │   ├── execution.py        # Next-open fill simulator with costs and financing
-│   ├── oos_study.py        # Candidates, selection rule and evaluation
+│   ├── oos_study.py        # Study 1: candidates, selection rule and evaluation
+│   ├── portfolio_backtest.py # Multi-asset next-open simulator, stats, deflated Sharpe
+│   ├── candidates.py       # Study 2 pre-registered candidates
 │   ├── data_loader.py      # Data providers and features
 │   ├── ml_signal.py        # Walk-forward RandomForest
 │   ├── black_scholes.py    # Realised-vol cone and N(d2)
@@ -146,7 +228,7 @@ algorithmic-trading-strategy/
 │   ├── broker_ibkr.py      # Guarded IBKR routing
 │   ├── live_trading.py
 │   └── visualization.py
-├── results/                # Study output (JSON and chart)
+├── results/                # candidates.md, study outputs (JSON and charts)
 ├── notebooks/              # Early research notebooks
 └── tests/
 ```
