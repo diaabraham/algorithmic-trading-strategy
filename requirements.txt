@@ -17,3 +17,4 @@ requests>=2.31.0
 pytest>=8.0.0
 snscrape>=0.7.0
 vaderSentiment>=3.3.2
+lightgbm>=4.0
