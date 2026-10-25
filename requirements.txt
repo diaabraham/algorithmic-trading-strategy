@@ -18,3 +18,4 @@ pytest>=8.0.0
 snscrape>=0.7.0
 vaderSentiment>=3.3.2
 lightgbm>=4.0
+openassetpricing>=0.0.2  # study 5 data

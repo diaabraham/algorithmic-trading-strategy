@@ -285,6 +285,153 @@ The study 3 rule (`none_voltarget`) is frozen at tag `paper-trade-v1`
   net of 2 bp costs and T-bill + 50 bp financing, is above SPY buy-and-hold
   over the same live window. Nothing about the rule changes in the meantime.
 
+## Study 5: machine learning over published anomalies and industries (pre-registered, failed)
+
+This study tests whether machine learning can pick, each month, which
+published anomaly portfolios and industries to hold. The steps were:
+
+1. The protocol `results/study5_protocol.md` (commit `469f7eb`) was committed
+   before any return was computed.
+2. The development results and `results/study5_frozen_config.md` were
+   committed next (`804ef64`, `edd1d4e`).
+3. The 2015-2024 holdout was then run once (`963178a`).
+
+**Data and its limits**
+
+* Chen & Zimmermann Open Source Asset Pricing value-weighted decile portfolios
+  for the published anomalies. With the 49 industries, that makes 228 assets
+  in the panel. Each anomaly enters through its
+  long-direction leg, and its long-short spread is signed so that positive is
+  the published direction.
+* Ken French 49 value-weighted industries, the CRSP value-weighted market and
+  T-bills.
+* FRED: 10-year and 3-month yields, BAA/AAA spread, CPI. These are lagged one
+  month, and CPI two months.
+* An anomaly is usable only from the year after its paper was published.
+* No stock-level data is used, because there is no point-in-time CRSP or
+  Compustat. The tradable units are therefore portfolios of about 250 stocks
+  each, rebuilt by the data provider.
+* The development benchmark is the CRSP market (SPY starts in 1993). The
+  holdout benchmark is SPY total return.
+* LLMs were excluded. Any model trained after 2015 has read about the holdout
+  period, so it is not look-ahead-safe.
+
+**Method**
+
+* 26 features: momentum, volatility and reversal of each portfolio; its rank
+  among usable assets; its category; years since publication; and the macro
+  series.
+* Expanding-window walk-forward, retrained every month. Decision month t
+  trains only on months up to t-1.
+* LightGBM ran on the CPU. A 512-256-128 MLP ran on an AMD Radeon RX 9070
+  through DirectML.
+
+**Candidates**
+
+* L0: top-10 by 12-month momentum (no ML).
+* L1: LightGBM top-10.
+* L2: MLP top-10.
+* L3: rank-average ensemble top-10.
+* O1: the market plus a volatility-targeted top-10 long-short overlay. Its
+  financing is charged at T-bill + 0.5% and its short fee at 0.5%.
+
+**Costs**
+
+* 20 bp per side for anomaly legs and 10 bp for industries.
+* Within-portfolio turnover by rebalance frequency, plus the cost of switching
+  between assets.
+
+**Development (1975-2014, net of costs, vs CRSP market)**
+
+| Candidate | CAGR | 2x costs | Sharpe | Max DD | DSR (N=55) |
+|---|---:|---:|---:|---:|---:|
+| L0 momentum (no ML) | 16.75% | 15.11% | 0.60 | -57.7% | 0.75 |
+| L3 ensemble | 15.98% | 13.72% | 0.59 | -65.3% | 0.73 |
+| L1 LightGBM | 15.06% | 12.71% | 0.55 | -65.1% | 0.56 |
+| L2 MLP | 14.12% | 11.91% | 0.50 | -68.5% | 0.36 |
+| O1 overlay (1986-2014) | 10.86% | 7.21% | 0.49 | -49.2% | 0.15 |
+| Market | 12.54% | - | 0.53 | -50.3% | - |
+
+The pre-registered rule (highest development CAGR) selected L0. The ML
+combiners did not beat plain momentum.
+
+**Holdout (2015-01 to 2024-12, run once, vs SPY)**
+
+| Candidate | CAGR | 2x costs | Sharpe | Max DD | Active PSR |
+|---|---:|---:|---:|---:|---:|
+| **L0 momentum (selected)** | **18.38%** | **16.78%** | **0.82** | **-21.6%** | **0.93** |
+| L1 LightGBM | 8.37% | 5.03% | 0.41 | -32.9% | 0.20 |
+| L2 MLP | 8.08% | 4.73% | 0.38 | -29.7% | 0.24 |
+| L3 ensemble | 8.13% | 4.72% | 0.40 | -28.4% | 0.18 |
+| O1 overlay | 13.85% | 10.49% | 0.81 | -21.9% | 0.67 |
+| SPY | 13.00% | - | 0.77 | -23.9% | - |
+
+**Pre-registered criteria for the selected L0**
+
+| Criterion | Result |
+|---|---|
+| 1. Holdout CAGR beats SPY | Pass (18.38% vs 13.00%) |
+| 2. Still beats SPY at 2x costs | Pass (16.78%) |
+| 3. Wins at least 2 of 3 subperiods | Pass (2/3: 8.7% vs 10.0%, 29.3% vs 19.5%, 18.0% vs 9.8%) |
+| 4a. Development deflated Sharpe (55 trials) >= 0.95 | **Fail (0.75)** |
+| 4b. Holdout active PSR >= 0.95 | **Fail (0.93)** |
+
+**Verdict: FAIL.**
+
+L0 beat SPY by about 5 points a year in the holdout. However, its edge is not
+statistically reliable after accounting for the 55 strategies tried across
+these studies.
+
+* Its outperformance came almost entirely after 2018.
+* It had higher volatility than SPY (21% vs 15%).
+* It lost the first subperiod.
+* Every ML candidate lagged SPY by 4-5 points a year in the holdout.
+
+**Capacity**
+
+* L0 holds 10 portfolios. On average 4.6 are industries, and the rest are
+  anomaly legs of about 250 stocks each, so the full strategy is roughly
+  1,500-2,000 stock positions.
+* Switching turnover is about 30% of the book per month, plus the
+  rebalancing inside each anomaly portfolio.
+* Running it for real means replicating each decile portfolio from stock-level
+  data, which this study does not have. Capacity was not measured, only bounded
+  by these figures.
+
+**GPU vs CPU** (MLP, same Windows PC, 24 refits on the largest training sets)
+
+| Device | Mean time per refit |
+|---|---:|
+| Ryzen CPU | 4.10 s |
+| RX 9070 (DirectML) | 3.09 s (1.33x faster) |
+
+| Full walk-forward run | Time |
+|---|---:|
+| GPU, development (2 x 480 refits) | 634 s + 293 s |
+| GPU, holdout (2 x 120 refits) | 482 s + 337 s |
+| LightGBM, development | 327 s + 160 s |
+| LightGBM, holdout | 159 s + 124 s |
+
+The GPU gain is small because the training sets are only 25k-200k rows by 26
+features. See `results/study5_gpu_timing.json`.
+
+Reproduce with:
+
+```bash
+python scripts/run_study5.py build --phase dev
+python scripts/run_study5.py predict --phase dev --model lgbm --kind long
+python scripts/run_study5.py predict --phase dev --model lgbm --kind ls
+python scripts/study5_gpu_driver.py data/cache/study5/arrays_dev_long.npz 899 1378 dml
+python scripts/study5_gpu_driver.py data/cache/study5/arrays_dev_ls.npz 899 1378 dml
+python scripts/run_study5.py evaluate --phase dev
+```
+
+The two driver commands are the MLP runs; use `cpu` instead of `dml` to run
+them without the GPU. The driver writes `pred_arrays_dev_<kind>_dml.npy` to the
+current directory. Copy each one to `data/cache/study5/pred_dev_mlp_<kind>.npy`
+before running `evaluate`. Repeat the whole sequence with `--phase holdout`, using
+months `1379 1498`.
+
 ## How the strategy works
 
 1. **Volatility regime.** 20-day realised volatility, ranked over the last 252
@@ -370,6 +517,8 @@ algorithmic-trading-strategy/
 │   ├── run_ml_study.py     # Study 3 (walk-forward ML)
 │   ├── paper_trade_update.py  # Live paper test of the frozen study 3 rule
 │   ├── run_factor_study.py # Study 4 (factor tilts, Ken French data)
+│   ├── run_study5.py       # Study 5 (ML over published anomalies and industries)
+│   ├── study5_gpu_driver.py # Study 5 MLP walk-forward on an AMD GPU (DirectML) or CPU
 │   └── verify_real_market.py
 ├── src/
 │   ├── strategy.py         # Volatility regime strategy
@@ -379,6 +528,7 @@ algorithmic-trading-strategy/
 │   ├── candidates.py       # Study 2 pre-registered candidates
 │   ├── ml_research/        # Study 3 walk-forward ML pipeline
 │   ├── factor_study.py     # Study 4 data, costs and statistics
+│   ├── study5/             # Study 5 data, panel, walk-forward and evaluation
 │   ├── data_loader.py      # Data providers and features
 │   ├── ml_signal.py        # Walk-forward RandomForest
 │   ├── black_scholes.py    # Realised-vol cone and N(d2)
