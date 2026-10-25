@@ -18,17 +18,7 @@ from src.model_runner import optimize_for_period
 from src.strategy import StrategyParams, VolatilityRegimeStrategy
 
 
-MARCH_2026_HIGH_BETA_UNIVERSE: List[str] = [
-    "WTI",
-    "TSLA",
-    "NVDA",
-    "MSTR",
-    "AMD",
-    "COIN",
-    "SPY",
-    "QQQ",
-    "GLD",
-]
+DEFAULT_MC_UNIVERSE: List[str] = ["SPY", "QQQ", "IWM", "TLT", "GLD"]
 
 
 @dataclass

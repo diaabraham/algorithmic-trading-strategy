@@ -1,5 +1,5 @@
 import argparse
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import logging
 from src.data_loader import DataLoader
 from src.strategy import VolatilityRegimeStrategy, StrategyParams
@@ -7,7 +7,7 @@ from src.visualization import StrategyVisualizer
 from src.config import get_settings
 from src.live_trading import LiveTradingEngine, open_position_side
 from src.model_runner import run_rigorous_suite
-from src.portfolio_sim import MARCH_2026_HIGH_BETA_UNIVERSE, run_portfolio_monte_carlo
+from src.portfolio_sim import DEFAULT_MC_UNIVERSE, run_portfolio_monte_carlo
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Run Volatility Regime Mean Reversion Strategy Backtest')
@@ -24,16 +24,17 @@ def parse_args():
     parser.add_argument('--alpha-vantage-key', type=str, default='', help='Alpha Vantage API key for news sentiment (or set ALPHAVANTAGE_API_KEY env)')
     parser.add_argument('--use-twitter', action='store_true', help='Use Twitter scrape sentiment in addition to news')
     parser.add_argument('--rigorous-test', action='store_true', help='Run rigorous suite (6m + 1w short/long) and exit')
-    parser.add_argument('--symbols', type=str, default='WTI,TSLA,NVDA', help='Comma-separated symbols for rigorous testing')
-    parser.add_argument('--as-of', type=str, default='2026-03-24', help='Anchor date (YYYY-MM-DD) for rigorous suite and MC window end')
+    parser.add_argument('--symbols', type=str, default='SPY,QQQ,IWM', help='Comma-separated symbols for rigorous testing')
+    parser.add_argument('--as-of', type=str, default=date.today().isoformat(), help='Anchor date (YYYY-MM-DD) for rigorous suite and MC window end (default: today)')
     parser.add_argument('--portfolio-mc', action='store_true', help='Run equal-weight portfolio Monte Carlo bootstrap on a date window')
     parser.add_argument('--mc-scenarios', type=int, default=500, help='Monte Carlo scenarios (default: 500)')
     parser.add_argument('--capital-cad', type=float, default=25000.0, help='Portfolio notional in CAD for MC (default: 25000)')
-    parser.add_argument('--mc-window-start', type=str, default='2026-03-01', help='Evaluation window start for portfolio MC')
-    parser.add_argument('--mc-symbols', type=str, default='', help='Comma-separated symbols for MC (default: March 2026 high-beta preset)')
+    parser.add_argument('--mc-window-start', type=str, default='', help='Evaluation window start for portfolio MC (default: one year before --as-of)')
+    parser.add_argument('--mc-symbols', type=str, default='', help='Comma-separated symbols for MC (default: SPY,QQQ,IWM,TLT,GLD)')
     parser.add_argument('--mc-tune', action='store_true', help='Grid-search params per symbol before MC (slower, more data)')
     parser.add_argument('--mc-ml', action='store_true', help='Enable ML probability gate during MC backtest')
-    parser.add_argument('--train-ml', action='store_true', help='Attach walk-forward ML column and gate entries in single backtest')
+    parser.add_argument('--train-ml', action='store_true', help='Gate entries in the single backtest with a walk-forward RandomForest P(up) (off by default)')
+    parser.add_argument('--cost-bps', type=float, default=2.0, help='Cost per side in basis points of traded notional (default: 2)')
     parser.add_argument('--ml-long-min', type=float, default=0.55, help='Min ML P(up) for long entries when ML enabled')
     parser.add_argument('--ml-short-max', type=float, default=0.45, help='Max ML P(up) for short entries when ML enabled')
     return parser.parse_args()
@@ -53,10 +54,11 @@ def main():
         if args.mc_symbols.strip():
             mc_syms = [s.strip().upper() for s in args.mc_symbols.split(",") if s.strip()]
         else:
-            mc_syms = list(MARCH_2026_HIGH_BETA_UNIVERSE)
+            mc_syms = list(DEFAULT_MC_UNIVERSE)
+        window_start = args.mc_window_start.strip() or (as_of - timedelta(days=365)).isoformat()
         report = run_portfolio_monte_carlo(
             symbols=mc_syms,
-            window_start=args.mc_window_start,
+            window_start=window_start,
             window_end=as_of.isoformat(),
             initial_cad=args.capital_cad,
             cad_usd=settings.cad_usd_fx,
@@ -103,7 +105,8 @@ def main():
 
     from src.ml_signal import attach_recursive_ml_up_proba, training_history_start
 
-    # Warmup bars train the walk-forward model. Trades are scored from the requested start.
+    # Warmup bars feed the indicators (and the walk-forward model when --train-ml is set).
+    # Trades are scored from the requested start.
     load_start = training_history_start(args.start_date)
     eval_start = args.start_date
 
@@ -124,7 +127,8 @@ def main():
         )
         data["News_Sentiment"] = sentiment_score
 
-    data = attach_recursive_ml_up_proba(data, eval_start=args.start_date)
+    if args.train_ml:
+        data = attach_recursive_ml_up_proba(data, eval_start=args.start_date)
 
     if data.empty:
         print("Error: No data available for the specified period")
@@ -134,8 +138,9 @@ def main():
     params = StrategyParams(
         max_hold_days=args.holding_days,
         sentiment_threshold=0.4 if args.sentiment else -1.0,
-        ml_up_min_long=args.ml_long_min,
-        ml_up_max_short=args.ml_short_max,
+        ml_up_min_long=args.ml_long_min if args.train_ml else 0.0,
+        ml_up_max_short=args.ml_short_max if args.train_ml else 1.0,
+        cost_bps=args.cost_bps,
     )
     strategy = VolatilityRegimeStrategy(
         data,
@@ -153,8 +158,10 @@ def main():
     print(f"Sharpe Ratio: {metrics['sharpe_ratio']:.2f}")
     print(f"Max Drawdown: {metrics['max_drawdown']:.2%}")
     print(f"CAGR: {metrics['cagr']:.2%}")
+    if "total_return" in metrics:
+        print(f"Total return (net of costs, next-open fills): {metrics['total_return']:.2%}")
     if "brinson_allocation" in metrics:
-        print("\nBrinson versus buy-and-hold (arithmetic effects; compounded returns below):")
+        print("\nBrinson versus buy-and-hold (gross, close-to-close approximation):")
         print(f"Allocation (flat vs long): {metrics['brinson_allocation']:.2%}")
         print(f"Selection (short vs long): {metrics['brinson_selection']:.2%}")
         print(f"Interaction: {metrics['brinson_interaction']:.2%}")
