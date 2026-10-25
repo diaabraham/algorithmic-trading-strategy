@@ -1,0 +1,263 @@
+{
+  "protocol": {
+    "in_sample": [
+      "2010-01-01",
+      "2019-12-31"
+    ],
+    "out_of_sample_start": "2020-01-01",
+    "selection": "highest in-sample Sharpe (excess of T-bills)",
+    "execution": "next-open fills, 2.0 bp per side, cash at T-bills, leverage at T-bills + 1%"
+  },
+  "in_sample": {
+    "vr_vol0.6_hold5_mloff": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.6075921395200716,
+      "cagr": 0.04869782132982414,
+      "ann_vol": 0.13105415864937,
+      "sharpe": 0.38625103394004967,
+      "max_drawdown": -0.26050455690918484,
+      "avg_exposure": 0.8339637558789266,
+      "turnover_per_year": 10.068189792784956,
+      "rebalances": 100
+    },
+    "vr_vol0.6_hold5_mlon": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.9254497572158491,
+      "cagr": 0.06782099303488098,
+      "ann_vol": 0.11772245203125029,
+      "sharpe": 0.5694348418325547,
+      "max_drawdown": -0.25604437157605997,
+      "avg_exposure": 0.8675716939467358,
+      "turnover_per_year": 4.429651239149991,
+      "rebalances": 44
+    },
+    "vr_vol0.6_hold10_mloff": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.41893519282275626,
+      "cagr": 0.035667660823214486,
+      "ann_vol": 0.1321678030123555,
+      "sharpe": 0.28951235117725854,
+      "max_drawdown": -0.29683050910454445,
+      "avg_exposure": 0.8310142815519392,
+      "turnover_per_year": 9.49294906352181,
+      "rebalances": 94
+    },
+    "vr_vol0.6_hold10_mlon": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.9254497572158491,
+      "cagr": 0.06782099303488098,
+      "ann_vol": 0.11772245203125029,
+      "sharpe": 0.5694348418325547,
+      "max_drawdown": -0.25604437157605997,
+      "avg_exposure": 0.8675716939467358,
+      "turnover_per_year": 4.429651239149991,
+      "rebalances": 44
+    },
+    "vr_vol0.7_hold5_mloff": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.6804303229138153,
+      "cagr": 0.053362586331173745,
+      "ann_vol": 0.13086333561362504,
+      "sharpe": 0.42054754492164764,
+      "max_drawdown": -0.24444240760817149,
+      "avg_exposure": 0.8364089177368988,
+      "turnover_per_year": 9.658729287997312,
+      "rebalances": 96
+    },
+    "vr_vol0.7_hold5_mlon": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.9254497572158491,
+      "cagr": 0.06782099303488098,
+      "ann_vol": 0.11772245203125029,
+      "sharpe": 0.5694348418325547,
+      "max_drawdown": -0.25604437157605997,
+      "avg_exposure": 0.8675716939467358,
+      "turnover_per_year": 4.429651239149991,
+      "rebalances": 44
+    },
+    "vr_vol0.7_hold10_mloff": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.48322554312859944,
+      "cagr": 0.040274465718748154,
+      "ann_vol": 0.1319802306230208,
+      "sharpe": 0.3233705888198496,
+      "max_drawdown": -0.2815573746285922,
+      "avg_exposure": 0.8334594434099113,
+      "turnover_per_year": 9.083488558734166,
+      "rebalances": 90
+    },
+    "vr_vol0.7_hold10_mlon": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.9254497572158491,
+      "cagr": 0.06782099303488098,
+      "ann_vol": 0.11772245203125029,
+      "sharpe": 0.5694348418325547,
+      "max_drawdown": -0.25604437157605997,
+      "avg_exposure": 0.8675716939467358,
+      "turnover_per_year": 4.429651239149991,
+      "rebalances": 44
+    },
+    "vr_vol0.8_hold5_mloff": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.7325406656395108,
+      "cagr": 0.05658949922675016,
+      "ann_vol": 0.1306240417535107,
+      "sharpe": 0.4445028444877729,
+      "max_drawdown": -0.24444240760817093,
+      "avg_exposure": 0.837641661578142,
+      "turnover_per_year": 9.452276414911672,
+      "rebalances": 94
+    },
+    "vr_vol0.8_hold5_mlon": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.9254497572158491,
+      "cagr": 0.06782099303488098,
+      "ann_vol": 0.11772245203125029,
+      "sharpe": 0.5694348418325547,
+      "max_drawdown": -0.25604437157605997,
+      "avg_exposure": 0.8675716939467358,
+      "turnover_per_year": 4.429651239149991,
+      "rebalances": 44
+    },
+    "vr_vol0.8_hold10_mloff": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.5292205423487533,
+      "cagr": 0.04346128394442572,
+      "ann_vol": 0.13174409272473248,
+      "sharpe": 0.3469364382156483,
+      "max_drawdown": -0.2815573746285933,
+      "avg_exposure": 0.8346921872511547,
+      "turnover_per_year": 8.877035685648528,
+      "rebalances": 88
+    },
+    "vr_vol0.8_hold10_mlon": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 0.9254497572158491,
+      "cagr": 0.06782099303488098,
+      "ann_vol": 0.11772245203125029,
+      "sharpe": 0.5694348418325547,
+      "max_drawdown": -0.25604437157605997,
+      "avg_exposure": 0.8675716939467358,
+      "turnover_per_year": 4.429651239149991,
+      "rebalances": 44
+    },
+    "sma150_monthly": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 1.6742971532189261,
+      "cagr": 0.1035420465657555,
+      "ann_vol": 0.11669396273518289,
+      "sharpe": 0.855393102230341,
+      "max_drawdown": -0.1963590886385641,
+      "avg_exposure": 0.8491096298433287,
+      "turnover_per_year": 1.4023499195125537,
+      "rebalances": 14
+    },
+    "sma200_monthly": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 1.2129744889845053,
+      "cagr": 0.0828105685464815,
+      "ann_vol": 0.12559685041608423,
+      "sharpe": 0.6523174091647191,
+      "max_drawdown": -0.22140889610447168,
+      "avg_exposure": 0.8590445645896896,
+      "turnover_per_year": 1.402353637926811,
+      "rebalances": 14
+    },
+    "volmanaged_target12": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 2.224278934895863,
+      "cagr": 0.12440842873437985,
+      "ann_vol": 0.14280632487510664,
+      "sharpe": 0.8541009855824607,
+      "max_drawdown": -0.18364477105295718,
+      "avg_exposure": 1.0553357307033016,
+      "turnover_per_year": 3.7757834202164644,
+      "rebalances": 110
+    },
+    "volmanaged_target16": {
+      "start": "2010-01-04",
+      "end": "2019-12-31",
+      "total_return": 2.8851157146550435,
+      "cagr": 0.14560289054460696,
+      "ann_vol": 0.16861520471409716,
+      "sharpe": 0.8580963408709223,
+      "max_drawdown": -0.20791297848044032,
+      "avg_exposure": 1.2303834671815659,
+      "turnover_per_year": 2.968295902588191,
+      "rebalances": 88
+    }
+  },
+  "in_sample_benchmark_spy": {
+    "start": "2010-01-04",
+    "end": "2019-12-31",
+    "total_return": 2.4706680583025986,
+    "cagr": 0.13273214211721096,
+    "ann_vol": 0.14691586133304094,
+    "sharpe": 0.8843785909481326,
+    "max_drawdown": -0.19350392361422464
+  },
+  "selected": "volmanaged_target16",
+  "out_of_sample": {
+    "volmanaged_target16": {
+      "start": "2020-01-02",
+      "end": "2026-10-23",
+      "total_return": 1.3810387716576806,
+      "cagr": 0.13621002157691042,
+      "ann_vol": 0.18116965419205852,
+      "sharpe": 0.6389151225522719,
+      "max_drawdown": -0.29214230144847697,
+      "avg_exposure": 1.1081339937528056,
+      "turnover_per_year": 2.913534470751707,
+      "rebalances": 77
+    },
+    "vr_vol0.7_hold5_mloff": {
+      "start": "2020-01-02",
+      "end": "2026-10-23",
+      "total_return": 1.5993394100731306,
+      "cagr": 0.15097603597841802,
+      "ann_vol": 0.1644431111851939,
+      "sharpe": 0.7643096870921221,
+      "max_drawdown": -0.2430726241332437,
+      "avg_exposure": 0.807993542899443,
+      "turnover_per_year": 10.58415048703999,
+      "rebalances": 72
+    },
+    "vr_vol0.7_hold5_mlon": {
+      "start": "2020-01-02",
+      "end": "2026-10-23",
+      "total_return": 1.572566798101334,
+      "cagr": 0.14922334173418506,
+      "ann_vol": 0.14631589261733663,
+      "sharpe": 0.8293739456737997,
+      "max_drawdown": -0.20710665532334305,
+      "avg_exposure": 0.8376351772534215,
+      "turnover_per_year": 4.683634018700139,
+      "rebalances": 32
+    }
+  },
+  "out_of_sample_benchmark_spy": {
+    "start": "2020-01-02",
+    "end": "2026-10-23",
+    "total_return": 1.6023654339015572,
+    "cagr": 0.15117316789001545,
+    "ann_vol": 0.19970237239500838,
+    "sharpe": 0.6627843467235243,
+    "max_drawdown": -0.3372371521062175
+  },
+  "average_t_bill_oos": 0.02844886682867497
+}
