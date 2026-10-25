@@ -1,0 +1,105 @@
+{
+  "protocol": "results/study4_protocol.md",
+  "dev_period": [
+    "1963-07-31",
+    "1999-12-31"
+  ],
+  "candidates": {
+    "F1_big_momentum": {
+      "start": "1963-07",
+      "end": "1999-12",
+      "months": 438,
+      "cagr": 0.16125272279758573,
+      "sharpe": 0.6033251860718852,
+      "ann_vol": 0.17106793815863763,
+      "max_drawdown": -0.40423632559046174,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.55546838492129,
+        "months": 438,
+        "psr_vs_zero": 0.9995724535586401,
+        "trials": 50,
+        "null_max_sharpe_annual": 0.801842587197748,
+        "deflated_sharpe_ratio": 0.06958174538725771
+      }
+    },
+    "F2_big_value": {
+      "start": "1963-07",
+      "end": "1999-12",
+      "months": 438,
+      "cagr": 0.15127069838967455,
+      "sharpe": 0.6007397389625561,
+      "ann_vol": 0.15219756579534388,
+      "max_drawdown": -0.31847952689136916,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.3216240716788215,
+        "months": 438,
+        "psr_vs_zero": 0.9734055716379092,
+        "trials": 50,
+        "null_max_sharpe_annual": 0.801842587197748,
+        "deflated_sharpe_ratio": 0.0019462415709462371
+      }
+    },
+    "F3_big_profitability": {
+      "start": "1963-07",
+      "end": "1999-12",
+      "months": 438,
+      "cagr": 0.13164456017016923,
+      "sharpe": 0.4786155463045327,
+      "ann_vol": 0.15607945514239124,
+      "max_drawdown": -0.4793682689558434,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.15485244508193508,
+        "months": 438,
+        "psr_vs_zero": 0.8245814684034949,
+        "trials": 50,
+        "null_max_sharpe_annual": 0.801842587197748,
+        "deflated_sharpe_ratio": 4.8488032254296667e-05
+      }
+    },
+    "F4_low_variance": {
+      "start": "1963-07",
+      "end": "1999-12",
+      "months": 438,
+      "cagr": 0.11838661927472893,
+      "sharpe": 0.4752058794384036,
+      "ann_vol": 0.1225973105198125,
+      "max_drawdown": -0.42662616829522226,
+      "active_vs_market": {
+        "active_sharpe_annual": -0.1919465633188637,
+        "months": 438,
+        "psr_vs_zero": 0.12375557839221313,
+        "trials": 50,
+        "null_max_sharpe_annual": 0.801842587197748,
+        "deflated_sharpe_ratio": 1.067047660758882e-09
+      }
+    },
+    "F5_mix_mom_value_prof": {
+      "start": "1963-07",
+      "end": "1999-12",
+      "months": 438,
+      "cagr": 0.14901753925528438,
+      "sharpe": 0.587328900382694,
+      "ann_vol": 0.1523346562731997,
+      "max_drawdown": -0.38996913988281123,
+      "active_vs_market": {
+        "active_sharpe_annual": 0.7099095378927732,
+        "months": 438,
+        "psr_vs_zero": 0.9999882093306239,
+        "trials": 50,
+        "null_max_sharpe_annual": 0.801842587197748,
+        "deflated_sharpe_ratio": 0.29201069976094574
+      }
+    }
+  },
+  "market": {
+    "start": "1963-07",
+    "end": "1999-12",
+    "months": 438,
+    "cagr": 0.12634576493160776,
+    "sharpe": 0.45649407515673346,
+    "ann_vol": 0.15208905316140664,
+    "max_drawdown": -0.4650754998419562
+  },
+  "selected": "F1_big_momentum",
+  "criterion_4a_dsr_ge_0.95": false
+}
