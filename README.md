@@ -191,6 +191,84 @@ rate 73%) passed. Criteria 2 (SPY 2024+), 3 (0 of 6 cross-market holdouts) and
 * The results are in `results/study3_dev.json` and
   `results/study3_holdout.json`.
 
+## Study 4: long-only large-cap factor tilts (pre-registered, failed)
+
+Studies 1-3 tried to time the market. Study 4 tests a different source of
+return: holding large caps with a documented factor premium, fully invested
+and unlevered.
+
+Protocol: [`results/study4_protocol.md`](results/study4_protocol.md) (commit
+`f761f04`). Frozen config:
+[`results/study4_frozen_config.md`](results/study4_frozen_config.md) (commit
+`32aa988`). The holdout was run once after the freeze.
+
+```bash
+python scripts/run_factor_study.py --phase dev
+python scripts/run_factor_study.py --phase holdout
+```
+
+**Data and its limits**
+* Free survivorship-free stock-level data does not exist, because Yahoo drops
+  delisted tickers. The study therefore uses the Kenneth R. French Data
+  Library, built from CRSP and Bloomberg, which includes delisted stocks and
+  forms portfolios point in time.
+* Returns are gross. A pre-registered drag from assumed turnover (10 bp per
+  side plus a 0.15%/yr fee) is deducted.
+* Rebalancing is assumed at month-end closes. "Large cap" means above the
+  NYSE median size.
+
+**Candidates.** Five candidates (N = 50 trials counting studies 1-3):
+* F1: large-cap momentum
+* F2: large-cap value
+* F3: large-cap profitability
+* F4: low-variance quintile
+* F5: an equal mix of F1-F3
+
+The rule was "highest development CAGR (US 1963-1999) net of costs". It
+picked **F1, large-cap momentum** (16.13% vs the market's 12.63%).
+
+**Holdout H1, US 2000-01 to 2026-08, vs SPY (net of costs)**
+
+| | CAGR | Sharpe | Max DD | Vol |
+|---|---:|---:|---:|---:|
+| **F1 large-cap momentum (selected)** | 8.33% | 0.46 | -48.4% | 16.1% |
+| SPY | 8.28% | 0.48 | -50.8% | 15.2% |
+
+* With 2x costs, F1 earns 7.74%.
+* By subperiod (F1 vs SPY): 2000-08 -1.7% vs -3.7%; 2009-17 14.0% vs 15.1%;
+  2018-26 13.7% vs 14.7%.
+* Other markets:
+  * US 1927-1963: F1 13.19% vs the market's 9.37%.
+  * Developed ex-US 1990-2026: F1 8.02% vs 6.38%. F1's ex-US series starts
+    in 1990-11, the market's in 1990-07.
+
+**Criteria**
+
+| # | Criterion | Result |
+|---|---|---|
+| 1 | H1 CAGR beats SPY | Pass, barely (+0.05 pp) |
+| 2 | Beats SPY with 2x costs | Fail |
+| 3 | Beats SPY in 2 of 3 subperiods | Fail (1/3) |
+| 4a | Deflated Sharpe >= 0.95 | Fail (0.07) |
+| 4b | H1 active PSR >= 0.95 | Fail (0.55) |
+| 5 | Beats its market in 1927-63 and ex-US | Pass |
+
+**Verdict: FAIL.** Large-cap momentum beat the market before 1963 and outside
+the US, but in the US since 2000 it only tied SPY after costs.
+
+* F3 (profitability), F4 (low variance) and F5 (the mix) each beat SPY in H1
+  (10.05%, 9.53% and 9.65% vs 8.28%; Sharpe 0.60, 0.67 and 0.55 vs 0.48).
+  The development rule did not select them, so this is not evidence for any of
+  them. Choosing one now would be selection on the holdout.
+* All holdout numbers for every candidate are in `results/study4_holdout.json`.
+
+**Small-fund feasibility**
+* The portfolios hold value-weighted large caps, so capacity is in the
+  billions. A $1-50M fund would trade a negligible share of volume.
+* The binding constraints are turnover (assumed 200%/yr for momentum, 30% for
+  value and profitability) and fees. Listed ETFs (MTUM, VLUE, QUAL, USMV)
+  implement similar but not identical rules for 0.15-0.25%/yr.
+
 ### Live paper test of the frozen study 3 rule
 
 The study 3 rule (`none_voltarget`) is frozen at tag `paper-trade-v1`
@@ -291,6 +369,7 @@ algorithmic-trading-strategy/
 │   ├── run_preregistered_study.py  # Study 2 (pre-registered)
 │   ├── run_ml_study.py     # Study 3 (walk-forward ML)
 │   ├── paper_trade_update.py  # Live paper test of the frozen study 3 rule
+│   ├── run_factor_study.py # Study 4 (factor tilts, Ken French data)
 │   └── verify_real_market.py
 ├── src/
 │   ├── strategy.py         # Volatility regime strategy
@@ -299,6 +378,7 @@ algorithmic-trading-strategy/
 │   ├── portfolio_backtest.py # Multi-asset next-open simulator, stats, deflated Sharpe
 │   ├── candidates.py       # Study 2 pre-registered candidates
 │   ├── ml_research/        # Study 3 walk-forward ML pipeline
+│   ├── factor_study.py     # Study 4 data, costs and statistics
 │   ├── data_loader.py      # Data providers and features
 │   ├── ml_signal.py        # Walk-forward RandomForest
 │   ├── black_scholes.py    # Realised-vol cone and N(d2)
