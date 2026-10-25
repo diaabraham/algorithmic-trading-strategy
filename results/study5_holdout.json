@@ -1,0 +1,183 @@
+{
+  "frozen_config": "results/study5_frozen_config.md",
+  "selected": "L0_momentum_top10",
+  "candidates": {
+    "L0_momentum_top10": {
+      "start": "2015-01",
+      "end": "2024-12",
+      "months": 120,
+      "cagr": 0.1837982766394035,
+      "sharpe": 0.8234062078811627,
+      "ann_vol": 0.21248086668551203,
+      "max_drawdown": -0.21554047338380056,
+      "cagr_2x_costs": 0.1678299600301485,
+      "subperiods_cagr_vs_spy": [
+        [
+          0.08695035307815124,
+          0.0998224581841447
+        ],
+        [
+          0.29297381151732727,
+          0.19486579792749348
+        ],
+        [
+          0.18041215709692682,
+          0.09791514484049957
+        ]
+      ],
+      "active_vs_spy": {
+        "active_sharpe_annual": 0.45829999956542167,
+        "months": 120,
+        "psr_vs_zero": 0.9323301230231414
+      },
+      "avg_switch_turnover_per_month": 0.3008333333333334,
+      "avg_industries_held": 4.591666666666667,
+      "avg_nlong_of_signal_legs": 248.34360554699538
+    },
+    "L1_lgbm_top10": {
+      "start": "2015-01",
+      "end": "2024-12",
+      "months": 120,
+      "cagr": 0.08373410170568452,
+      "sharpe": 0.4087550347415408,
+      "ann_vol": 0.21032707293090935,
+      "max_drawdown": -0.3284833635829494,
+      "cagr_2x_costs": 0.05034721497960071,
+      "subperiods_cagr_vs_spy": [
+        [
+          0.09894310131923101,
+          0.0998224581841447
+        ],
+        [
+          0.13444115852969452,
+          0.19486579792749348
+        ],
+        [
+          0.020965428946075892,
+          0.09791514484049957
+        ]
+      ],
+      "active_vs_spy": {
+        "active_sharpe_annual": -0.2754198807862482,
+        "months": 120,
+        "psr_vs_zero": 0.1968339598772535
+      },
+      "avg_switch_turnover_per_month": 0.675,
+      "avg_industries_held": 3.2583333333333333,
+      "avg_nlong_of_signal_legs": 312.6786155747837
+    },
+    "L2_mlp_top10": {
+      "start": "2015-01",
+      "end": "2024-12",
+      "months": 120,
+      "cagr": 0.08076802928599047,
+      "sharpe": 0.3818422109971634,
+      "ann_vol": 0.22249705627564664,
+      "max_drawdown": -0.29741275266637013,
+      "cagr_2x_costs": 0.047323581130425785,
+      "subperiods_cagr_vs_spy": [
+        [
+          0.07028534635742978,
+          0.0998224581841447
+        ],
+        [
+          0.21259482406613794,
+          0.19486579792749348
+        ],
+        [
+          -0.027292693989336536,
+          0.09791514484049957
+        ]
+      ],
+      "active_vs_spy": {
+        "active_sharpe_annual": -0.2342962989964581,
+        "months": 120,
+        "psr_vs_zero": 0.23774539824532198
+      },
+      "avg_switch_turnover_per_month": 0.6791666666666668,
+      "avg_industries_held": 3.3,
+      "avg_nlong_of_signal_legs": 290.71019900497515
+    },
+    "L3_ensemble_top10": {
+      "start": "2015-01",
+      "end": "2024-12",
+      "months": 120,
+      "cagr": 0.0813221131657591,
+      "sharpe": 0.39726794827569745,
+      "ann_vol": 0.20861592787386887,
+      "max_drawdown": -0.2835683925190454,
+      "cagr_2x_costs": 0.04716490146885244,
+      "subperiods_cagr_vs_spy": [
+        [
+          0.08984204034753396,
+          0.0998224581841447
+        ],
+        [
+          0.16568588967500752,
+          0.19486579792749348
+        ],
+        [
+          -0.00477756596322787,
+          0.09791514484049957
+        ]
+      ],
+      "active_vs_spy": {
+        "active_sharpe_annual": -0.3034408974118518,
+        "months": 120,
+        "psr_vs_zero": 0.18278714002688295
+      },
+      "avg_switch_turnover_per_month": 0.7008333333333334,
+      "avg_industries_held": 3.316666666666667,
+      "avg_nlong_of_signal_legs": 291.9713216957606
+    },
+    "O1_market_plus_ls_overlay": {
+      "start": "2015-01",
+      "end": "2024-12",
+      "months": 120,
+      "cagr": 0.13854153312358197,
+      "sharpe": 0.8050045471700568,
+      "ann_vol": 0.15664736208531835,
+      "max_drawdown": -0.2187634987600543,
+      "cagr_2x_costs": 0.10492063646069782,
+      "subperiods_cagr_vs_spy": [
+        [
+          0.06811541840233604,
+          0.0998224581841447
+        ],
+        [
+          0.20537063646949294,
+          0.19486579792749348
+        ],
+        [
+          0.1463252062454954,
+          0.09791514484049957
+        ]
+      ],
+      "active_vs_spy": {
+        "active_sharpe_annual": 0.1400776622459541,
+        "months": 120,
+        "psr_vs_zero": 0.6694964965988358
+      },
+      "avg_k": 0.35480924893886095,
+      "max_k": 0.727187506671949
+    }
+  },
+  "spy": {
+    "start": "2015-01",
+    "end": "2024-12",
+    "months": 120,
+    "cagr": 0.1299784554658916,
+    "sharpe": 0.7688358001434188,
+    "ann_vol": 0.15329338870075,
+    "max_drawdown": -0.2392717791308986
+  },
+  "criterion": {
+    "1_holdout_cagr_beats_spy": true,
+    "2_2x_costs_beats_spy": true,
+    "3_subperiods_won": "2/3",
+    "3_pass": true,
+    "4a_dev_dsr_ge_0.95": false,
+    "4b_holdout_psr_ge_0.95": false,
+    "PASS": false
+  }
+}

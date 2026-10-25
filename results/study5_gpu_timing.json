@@ -1,8 +1,30 @@
 {
   "machine": "Windows PC, AMD Ryzen 5 9600X (12 threads), AMD Radeon RX 9070, torch-directml 2.4.1",
   "model": "MLP 512-256-128, 6 epochs, batch 2048, refit monthly",
-  "benchmark_24_refits_2010_2014_long_panel": {"cpu_mean_s": 4.10, "directml_mean_s": 3.09, "speedup": 1.33},
-  "full_dev_walk_forward_directml": {"long_panel_refits": 480, "long_panel_total_s": 633.6, "ls_panel_refits": 480, "ls_panel_total_s": 292.9},
-  "lightgbm_cpu_box_8_threads": {"long_panel_total_s": 327, "ls_panel_total_s": 160},
-  "note": "LightGBM's Windows wheel has no GPU build, and the training sets (25k-170k rows x 26 features) are small, so the GPU gives only about 1.3x."
+  "benchmark_24_refits_2010_2014_long_panel": {
+    "cpu_mean_s": 4.1,
+    "directml_mean_s": 3.09,
+    "speedup": 1.33
+  },
+  "full_dev_walk_forward_directml": {
+    "long_panel_refits": 480,
+    "long_panel_total_s": 633.6,
+    "ls_panel_refits": 480,
+    "ls_panel_total_s": 292.9
+  },
+  "lightgbm_cpu_box_8_threads": {
+    "long_panel_total_s": 327,
+    "ls_panel_total_s": 160
+  },
+  "note": "LightGBM's Windows wheel has no GPU build, and the training sets (25k-170k rows x 26 features) are small, so the GPU gives only about 1.3x.",
+  "full_holdout_walk_forward_directml": {
+    "long_panel_refits": 120,
+    "long_panel_total_s": 482.3,
+    "ls_panel_refits": 120,
+    "ls_panel_total_s": 337.1
+  },
+  "lightgbm_cpu_box_holdout": {
+    "long_panel_total_s": 159,
+    "ls_panel_total_s": 124
+  }
 }
