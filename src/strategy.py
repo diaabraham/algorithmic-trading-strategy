@@ -4,6 +4,7 @@ from typing import Dict, List
 from dataclasses import dataclass
 from src.black_scholes import black_scholes_up_proba, expected_move
 from src.brinson import brinson_single_asset
+from src.execution import simulate_exposure
 from src.trade import Trade
 
 @dataclass
@@ -37,6 +38,9 @@ class StrategyParams:
     bs_move_mult: float = 0.75
     bs_long_min: float = 0.45
     bs_short_max: float = 0.55
+    # Execution: decisions use the bar's close; fills happen at the NEXT bar's open.
+    # cost_bps is charged per side on traded notional (commission + spread + impact).
+    cost_bps: float = 2.0
 
 class VolatilityRegimeStrategy:
     def __init__(
@@ -271,12 +275,8 @@ class VolatilityRegimeStrategy:
                 
                 if exit_signal:
                     self.current_trade.exit_date = current_date
-                    self.current_trade.exit_price = current_price
-                    
-                    if self.position == 1:
-                        self.current_trade.pnl = (current_price - self.current_trade.entry_price) / self.current_trade.entry_price
-                    else:
-                        self.current_trade.pnl = (self.current_trade.entry_price - current_price) / self.current_trade.entry_price
+                    self.current_trade.exit_price = self._fill_price(i)
+                    self.current_trade.pnl = self._net_trade_return(self.current_trade)
                     
                     self.trades.append(self.current_trade)
                     self.position = 0
@@ -300,7 +300,7 @@ class VolatilityRegimeStrategy:
                     self.current_trade = Trade(
                         entry_date=current_date,
                         exit_date=None,
-                        entry_price=current_price,
+                        entry_price=self._fill_price(i),
                         exit_price=None,
                         position=1,
                         pnl=0.0,
@@ -316,7 +316,7 @@ class VolatilityRegimeStrategy:
                     self.current_trade = Trade(
                         entry_date=current_date,
                         exit_date=None,
-                        entry_price=current_price,
+                        entry_price=self._fill_price(i),
                         exit_price=None,
                         position=-1,
                         pnl=0.0,
@@ -325,32 +325,59 @@ class VolatilityRegimeStrategy:
                     self.entry_atr = atr if not np.isnan(atr) else None
                     self.entry_signal_strength = abs(price_deviation / (deviation_std + 1e-9))
         
-        # Close any remaining open trade. Leave self.position set so live
-        # routing can tell a still-open position from a flat book.
-        if self.current_trade is not None:
+        # Mark any remaining open trade at the last close. Leave self.position
+        # set so live routing can tell a still-open position from a flat book.
+        # A signal on the very last bar has no fill yet and is not a trade.
+        last = len(self.data) - 1
+        if self.current_trade is not None and self.entry_index is not None and self.entry_index < last:
             self.current_trade.exit_date = self.data.index[-1]
-            self.current_trade.exit_price = self.data['Close'].iloc[-1]
-            if self.entry_index is not None:
-                self.current_trade.holding_period = (len(self.data) - 1) - self.entry_index
-            
-            if self.position == 1:
-                self.current_trade.pnl = (self.current_trade.exit_price - self.current_trade.entry_price) / self.current_trade.entry_price
-            else:
-                self.current_trade.pnl = (self.current_trade.entry_price - self.current_trade.exit_price) / self.current_trade.entry_price
-            
+            self.current_trade.exit_price = float(self.data['Close'].iloc[-1])
+            self.current_trade.holding_period = last - self.entry_index
+            self.current_trade.pnl = self._net_trade_return(self.current_trade, exit_cost=False)
             self.trades.append(self.current_trade)
         
         return self.calculate_metrics()
 
-    def _daily_exposure(self) -> tuple[pd.Series, pd.Series]:
-        """Position and close-to-close asset return over the evaluation window."""
+    def _fill_price(self, i: int) -> float:
+        """Fill for a decision on bar i: the next bar's open (last close if none)."""
+        if i + 1 < len(self.data) and "Open" in self.data.columns:
+            px = float(self.data["Open"].iloc[i + 1])
+            if np.isfinite(px) and px > 0:
+                return px
+        return float(self.data["Close"].iloc[i])
+
+    def _net_trade_return(self, trade: Trade, exit_cost: bool = True) -> float:
+        gross = trade.position * (trade.exit_price - trade.entry_price) / trade.entry_price
+        sides = 2 if exit_cost else 1
+        return float(gross - sides * self.params.cost_bps * 1e-4)
+
+    def decided_exposure(self) -> pd.Series:
+        """Exposure decided at each bar's close (+1 long, -1 short, 0 flat).
+
+        A trade entered on decision bar a and exited on decision bar b is held
+        from the open after a to the open after b.
+        """
         idx = self.data.index
-        position = pd.Series(0.0, index=idx)
+        decided = pd.Series(0.0, index=idx)
         for trade in self.trades:
             if trade.entry_date is None or trade.exit_date is None:
                 continue
-            held = (idx > trade.entry_date) & (idx <= trade.exit_date)
-            position.loc[held] = float(trade.position)
+            on = (idx >= trade.entry_date) & (idx < trade.exit_date)
+            if trade.exit_date == idx[-1]:
+                on = on | (idx == idx[-1])
+            decided.loc[on] = float(trade.position)
+        return decided
+
+    def _daily_exposure(self) -> tuple[pd.Series, pd.Series]:
+        """Position held over each close-to-close interval, and the asset return.
+
+        Fills happen at the open after the decision, so the position earning the
+        close-to-close return on bar t is the one decided on bar t-1 (the open
+        leg of fill days is approximated; exact returns come from
+        ``_strategy_daily_returns``).
+        """
+        idx = self.data.index
+        position = self.decided_exposure().shift(1).fillna(0.0)
         asset = self.data["Close"].astype(float).pct_change().fillna(0.0)
         if self.eval_start_date is not None:
             mask = idx >= self.eval_start_date
@@ -361,9 +388,20 @@ class VolatilityRegimeStrategy:
         return position, asset
 
     def _strategy_daily_returns(self) -> pd.Series:
-        """Close-to-close strategy returns, including flat days as zero."""
-        position, asset = self._daily_exposure()
-        return position * asset
+        """Net daily returns with next-open fills and per-side costs (flat days = 0)."""
+        if "Open" not in self.data.columns:
+            position, asset = self._daily_exposure()
+            return position * asset
+        sim = simulate_exposure(
+            self.data["Open"].astype(float),
+            self.data["Close"].astype(float),
+            self.decided_exposure(),
+            cost_bps=self.params.cost_bps,
+        )
+        ret = sim["ret"]
+        if self.eval_start_date is not None:
+            ret = ret.loc[self.data.index >= self.eval_start_date]
+        return ret.replace([np.inf, -np.inf], 0.0).fillna(0.0)
 
     def _brinson_factors(self) -> Dict:
         position, asset = self._daily_exposure()
@@ -411,8 +449,8 @@ class VolatilityRegimeStrategy:
             peak = np.maximum.accumulate(equity)
             max_drawdown = float(np.min(equity / peak - 1.0))
         
-        # CAGR uses the evaluation window, not indicator warmup before it.
-        total_return = float(np.prod(1 + np.array(returns)) - 1)
+        # CAGR from the daily equity curve over the evaluation window.
+        total_return = float(np.prod(1 + daily.to_numpy(dtype=float)) - 1) if len(daily) else 0.0
         window_start = self.data.index[0]
         if self.eval_start_date is not None and self.eval_start_date > window_start:
             window_start = self.eval_start_date
@@ -429,5 +467,6 @@ class VolatilityRegimeStrategy:
             'sharpe_ratio': sharpe_ratio,
             'max_drawdown': max_drawdown,
             'cagr': cagr,
+            'total_return': total_return,
             **brinson,
         }
