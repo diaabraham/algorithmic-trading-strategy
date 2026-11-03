@@ -1,5 +1,5 @@
 {
-  "updated_on": "2026-10-25",
+  "updated_on": "2026-11-03",
   "pass_rule": "CAGR net of costs above SPY total return (2 bp entry) over the same live window",
   "judged_at_months": [
     12,
@@ -13,7 +13,11 @@
     "live_start": "2026-10-26",
     "weight_at_freeze": 1.5,
     "measurable": "daily, from the first close after the 2026-10-26 open fill",
-    "status": "no live bars yet",
+    "status": "live",
+    "last_bar": "2026-11-02",
+    "trading_days": 6,
+    "strategy_return": -0.020564014799881902,
+    "spy_return": -0.01335848841615983,
     "checkpoints": {
       "12_months": {
         "window_end": "2027-10-26",
@@ -33,10 +37,10 @@
     "first_decision": "2024-12-31",
     "first_live_holding_month": "2026-11",
     "data": {
-      "cz_release": "release202510",
+      "cz_release": "release_aliases",
       "cz_data_end": "2024-12-31",
-      "industries_data_end": "2026-08-31",
-      "fetched_on": "2026-10-25"
+      "industries_data_end": "2026-09-30",
+      "fetched_on": "2026-11-03"
     },
     "measurable": "when a Chen-Zimmermann release covers the month; the anomaly legs are not priced in real time, so decisions and returns are filled in from published portfolio returns",
     "latest_logged_decision": {
